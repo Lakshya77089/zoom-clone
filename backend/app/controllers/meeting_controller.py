@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.exceptions import ForbiddenError, MeetingEndedError, NotFoundError, ValidationError
@@ -11,6 +11,7 @@ from app.models import (
     Participant,
     ParticipantRole,
     ParticipantStatus,
+    Signal,
     User,
 )
 from app.schemas import JoinMeetingIn, ScheduleMeetingIn
@@ -167,6 +168,7 @@ class MeetingController:
             participant.left_at = now
         meeting.status = MeetingStatus.ENDED
         meeting.ended_at = now
+        self.db.execute(delete(Signal).where(Signal.meeting_id == meeting.id))
 
     def _mark_live(self, meeting: Meeting) -> None:
         if meeting.status == MeetingStatus.SCHEDULED:

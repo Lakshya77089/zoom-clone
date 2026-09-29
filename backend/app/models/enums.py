@@ -25,6 +25,13 @@ class ParticipantStatus(str, enum.Enum):
     REMOVED = "removed"
 
 
+class SignalKind(str, enum.Enum):
+    HELLO = "hello"
+    OFFER = "offer"
+    ANSWER = "answer"
+    CANDIDATE = "candidate"
+
+
 def enum_column(enum_cls: type[enum.Enum]) -> Enum:
     return Enum(
         enum_cls,
