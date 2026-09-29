@@ -10,6 +10,8 @@ DisplayName = Annotated[str, StringConstraints(strip_whitespace=True, min_length
 
 class JoinMeetingIn(BaseModel):
     display_name: DisplayName
+    is_muted: bool = False
+    is_video_on: bool = True
 
 
 class ParticipantUpdateIn(BaseModel):

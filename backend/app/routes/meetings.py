@@ -51,7 +51,7 @@ def start_meeting(code: str, user: CurrentUser, meetings: Meetings):
 
 @router.post("/{code}/join", response_model=MeetingSessionOut, status_code=status.HTTP_201_CREATED)
 def join_meeting(code: str, data: JoinMeetingIn, meetings: Meetings):
-    return _session(*meetings.join(code, data.display_name))
+    return _session(*meetings.join(code, data))
 
 
 @router.post("/{code}/end", response_model=MeetingOut)

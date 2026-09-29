@@ -13,7 +13,7 @@ from app.models import (
     ParticipantStatus,
     User,
 )
-from app.schemas import ScheduleMeetingIn
+from app.schemas import JoinMeetingIn, ScheduleMeetingIn
 from app.utils.meeting_code import generate_meeting_code, normalize_meeting_code
 from app.utils.time import to_naive_utc, utcnow
 
@@ -122,10 +122,12 @@ class MeetingController:
         self.db.commit()
         return meeting, host
 
-    def join(self, raw_code: str, display_name: str) -> tuple[Meeting, Participant]:
+    def join(self, raw_code: str, data: JoinMeetingIn) -> tuple[Meeting, Participant]:
         meeting = self.get_joinable(raw_code)
         self._mark_live(meeting)
-        participant = self._add_participant(meeting, display_name, ParticipantRole.ATTENDEE)
+        participant = self._add_participant(meeting, data.display_name, ParticipantRole.ATTENDEE)
+        participant.is_muted = data.is_muted
+        participant.is_video_on = data.is_video_on
         self.db.commit()
         return meeting, participant
 
