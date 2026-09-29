@@ -99,6 +99,7 @@ Base URL: `/api`. Interactive docs are at `/docs` once the backend is running.
 | DELETE | `/meetings/{code}/participants/{id}` | Host removes a participant |
 | POST   | `/meetings/{code}/signals` | Send a WebRTC signal (offer, answer, ICE candidate, hello) to another participant |
 | GET    | `/meetings/{code}/signals?after={id}` | Get signals addressed to you, acknowledging everything up to `after` |
+| GET    | `/rtc/ice-servers` | STUN/TURN servers and ICE policy for the browser |
 
 In-room actions identify the caller with the `X-Participant-Id` header. The ID comes from the join/start response and is kept in the browser's `sessionStorage`.
 
@@ -135,10 +136,14 @@ Open http://localhost:3000.
 | `DATABASE_URL` | backend | `sqlite:///./zoom.db` |
 | `FRONTEND_URL` | backend (fallback base for invite links) | `http://localhost:3000` |
 | `CORS_ORIGINS` | backend, comma separated | `http://localhost:3000` |
+| `STUN_URLS` | backend, comma separated | Google public STUN |
+| `TURN_URLS` | backend, comma separated TURN urls, e.g. `turn:host:3478,turns:host:443?transport=tcp` | empty |
+| `TURN_USERNAME` / `TURN_CREDENTIAL` | backend, credentials for `TURN_URLS` | empty |
+| `CLOUDFLARE_TURN_KEY_ID` / `CLOUDFLARE_TURN_API_TOKEN` | backend, generates short-lived Cloudflare TURN credentials | empty |
+| `ICE_TRANSPORT_POLICY` | backend, `all` or `relay` (force every call through TURN) | `all` |
 | `BACKEND_URL` | frontend, build time (target of the `/api` proxy) | `http://localhost:8000` |
 | `NEXT_PUBLIC_API_URL` | frontend, optional (call the API directly instead of through the proxy) | empty |
-| `NEXT_PUBLIC_TURN_URLS` | frontend, optional, comma separated TURN server urls | empty |
-| `NEXT_PUBLIC_TURN_USERNAME` / `NEXT_PUBLIC_TURN_CREDENTIAL` | frontend, optional TURN credentials | empty |
+
 
 The frontend calls the API on its own origin at `/api/*`, and Next.js forwards those requests to `BACKEND_URL`. The browser never makes a cross-origin request, so the app works behind port forwarding or a tunnel with only port 3000 exposed. Invite links automatically use whichever URL the app was opened on.
 
@@ -155,7 +160,8 @@ On free hosting tiers the SQLite file lives on ephemeral disk, so it is re-seede
 - Anyone with a meeting ID or invite link can join as an attendee. Joining a scheduled meeting before the host starts it makes the meeting live.
 - Audio and video go directly between browsers over WebRTC in a full mesh (every participant connects to every other one), which suits small meetings. In each pair, the participant who joined later sends the offer, so both sides never offer at once. A participant who reloads sends a `hello` so the other side calls again, and calls that don't connect within 15 seconds are retried.
 - Signaling uses the REST API with short polling instead of WebSockets, so everything works behind the Next.js proxy or a tunnel with only one port exposed.
-- Connections use Google's public STUN servers. Participants on strict corporate or carrier networks may need a TURN relay, which can be set with the `NEXT_PUBLIC_TURN_*` variables.
+- The browser gets its ICE servers from `/api/rtc/ice-servers`, so TURN credentials stay on the backend and can be changed with a restart instead of a rebuild. Google's public STUN servers are enough when both sides have a normal home connection. Campus, office and mobile networks usually use symmetric NAT or block UDP, and there a TURN relay is required. Set `TURN_URLS`/`TURN_USERNAME`/`TURN_CREDENTIAL` (Metered, ExpressTURN, coturn, …) or the Cloudflare TURN keys. A `turns:…:443?transport=tcp` url gets through most firewalls.
+- Each remote tile shows "Connecting..." until media is actually flowing, and "Can't connect" if the two networks can't reach each other.
 - Participant list, mute/video status and host actions sync through the API, which the room polls every 2 seconds. Mute and video off disable the local tracks, so muted audio is silent for everyone.
 - A meeting ends when the host ends it for everyone, or when the last participant leaves. Ended meetings can't be joined again and show up under Recent meetings.
 - Features not in the assignment (chat, screen share, recording, reactions, other navbar tabs) appear as disabled buttons to keep the Zoom layout, but they have no functionality.
