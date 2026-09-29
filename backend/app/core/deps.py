@@ -1,0 +1,34 @@
+from typing import Annotated
+
+from fastapi import Depends, Header
+from sqlalchemy.orm import Session
+
+from app.controllers import MeetingController, ParticipantController, UserController
+from app.core.database import get_db
+from app.models import User
+
+DbSession = Annotated[Session, Depends(get_db)]
+
+
+def get_user_controller(db: DbSession) -> UserController:
+    return UserController(db)
+
+
+def get_meeting_controller(db: DbSession) -> MeetingController:
+    return MeetingController(db)
+
+
+def get_participant_controller(db: DbSession) -> ParticipantController:
+    return ParticipantController(db)
+
+
+def get_current_user(
+    controller: Annotated[UserController, Depends(get_user_controller)],
+) -> User:
+    return controller.get_default_user()
+
+
+CurrentUser = Annotated[User, Depends(get_current_user)]
+Meetings = Annotated[MeetingController, Depends(get_meeting_controller)]
+Participants = Annotated[ParticipantController, Depends(get_participant_controller)]
+RequesterId = Annotated[int, Header(alias="X-Participant-Id")]
