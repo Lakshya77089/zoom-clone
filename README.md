@@ -16,7 +16,7 @@ A video conferencing web app modeled on the Zoom web client. You can start insta
 - **Instant meeting**: generates a unique 11-digit meeting ID and a shareable invite link (`/j/<meeting id>`), then takes the host straight into the room.
 - **Join meeting**: accepts a meeting ID (with or without spaces) or a full invite link. You enter a display name first, and the meeting's existence is checked before joining. Invite links open a pre-join screen with a camera and mic preview.
 - **Schedule meeting**: topic, description, date and time pickers, and duration. The meeting ID and link are generated automatically, the meeting is stored in SQLite, and it appears under Upcoming meetings. After saving you can copy the invitation.
-- **Meeting room**: local camera and microphone preview, mute and video toggles, participant grid, participants panel, meeting info with a copy-link button, and leave / end meeting.
+- **Meeting room**: live video and audio between all participants over WebRTC, mute and video toggles, participant grid, participants panel, meeting info with a copy-link button, and leave / end meeting.
 - **Host controls**: mute all, remove a participant, and end the meeting for everyone. If the host leaves, host is passed to the next participant.
 - **Responsive**: works on mobile, tablet and desktop.
 
@@ -62,12 +62,19 @@ participants
   display_name, role (host | attendee), status (active | left | removed),
   is_muted, is_video_on, joined_at, left_at
   INDEX (meeting_id, status)
+
+signals
+  id PK AUTOINCREMENT, meeting_id FK -> meetings.id (CASCADE),
+  sender_id FK -> participants.id (CASCADE), recipient_id FK -> participants.id (CASCADE),
+  kind (hello | offer | answer | candidate), payload JSON, created_at
+  INDEX (recipient_id, id)
 ```
 
 - A user hosts many meetings, and a meeting has many participants.
 - Participants are separate rows for each join, so meeting history (who joined, when, and whether they left or were removed) is kept.
 - The invite link is not stored. The API builds it from the address the app was opened on (the frontend sends it in an `X-Public-Origin` header) and the meeting code, so links stay correct on localhost, behind a tunnel, or on a deployed domain. `FRONTEND_URL` is the fallback.
 - All timestamps are stored in UTC and returned as ISO 8601 strings with a `Z` suffix.
+- `signals` is a short-lived WebRTC signaling mailbox. Each participant reads the rows addressed to them with an `after` cursor, which also deletes the rows they have already processed. `AUTOINCREMENT` keeps ids increasing after deletes, so the cursor never skips a message. All of a meeting's signals are deleted when it ends.
 
 ## API
 
@@ -90,6 +97,8 @@ Base URL: `/api`. Interactive docs are at `/docs` once the backend is running.
 | POST   | `/meetings/{code}/participants/{id}/leave` | Leave the meeting |
 | POST   | `/meetings/{code}/participants/mute-all` | Host mutes everyone else |
 | DELETE | `/meetings/{code}/participants/{id}` | Host removes a participant |
+| POST   | `/meetings/{code}/signals` | Send a WebRTC signal (offer, answer, ICE candidate, hello) to another participant |
+| GET    | `/meetings/{code}/signals?after={id}` | Get signals addressed to you, acknowledging everything up to `after` |
 
 In-room actions identify the caller with the `X-Participant-Id` header. The ID comes from the join/start response and is kept in the browser's `sessionStorage`.
 
@@ -128,6 +137,8 @@ Open http://localhost:3000.
 | `CORS_ORIGINS` | backend, comma separated | `http://localhost:3000` |
 | `BACKEND_URL` | frontend, build time (target of the `/api` proxy) | `http://localhost:8000` |
 | `NEXT_PUBLIC_API_URL` | frontend, optional (call the API directly instead of through the proxy) | empty |
+| `NEXT_PUBLIC_TURN_URLS` | frontend, optional, comma separated TURN server urls | empty |
+| `NEXT_PUBLIC_TURN_USERNAME` / `NEXT_PUBLIC_TURN_CREDENTIAL` | frontend, optional TURN credentials | empty |
 
 The frontend calls the API on its own origin at `/api/*`, and Next.js forwards those requests to `BACKEND_URL`. The browser never makes a cross-origin request, so the app works behind port forwarding or a tunnel with only port 3000 exposed. Invite links automatically use whichever URL the app was opened on.
 
@@ -142,7 +153,10 @@ On free hosting tiers the SQLite file lives on ephemeral disk, so it is re-seede
 
 - There is no login. A default seeded user is always signed in and owns the dashboard, as the assignment requires.
 - Anyone with a meeting ID or invite link can join as an attendee. Joining a scheduled meeting before the host starts it makes the meeting live.
-- The room shows your own camera and microphone. Video is not streamed between participants. Participants, mute/video status and host actions sync through the API, which the room polls every 2 seconds.
+- Audio and video go directly between browsers over WebRTC in a full mesh (every participant connects to every other one), which suits small meetings. In each pair, the participant who joined later sends the offer, so both sides never offer at once. A participant who reloads sends a `hello` so the other side calls again, and calls that don't connect within 15 seconds are retried.
+- Signaling uses the REST API with short polling instead of WebSockets, so everything works behind the Next.js proxy or a tunnel with only one port exposed.
+- Connections use Google's public STUN servers. Participants on strict corporate or carrier networks may need a TURN relay, which can be set with the `NEXT_PUBLIC_TURN_*` variables.
+- Participant list, mute/video status and host actions sync through the API, which the room polls every 2 seconds. Mute and video off disable the local tracks, so muted audio is silent for everyone.
 - A meeting ends when the host ends it for everyone, or when the last participant leaves. Ended meetings can't be joined again and show up under Recent meetings.
 - Features not in the assignment (chat, screen share, recording, reactions, other navbar tabs) appear as disabled buttons to keep the Zoom layout, but they have no functionality.
 - Scheduled meetings must start in the future and last between 15 minutes and 24 hours.
