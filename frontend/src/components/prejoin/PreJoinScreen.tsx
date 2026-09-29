@@ -67,9 +67,14 @@ export function PreJoinScreen({ code }: PreJoinScreenProps) {
           <AlertCircle size={48} className="text-zoom-red" />
           <h1 className="mt-4 text-xl font-bold">{loadError}</h1>
           <p className="mt-2 text-sm text-ink-muted">Meeting ID: {formatMeetingCode(code)}</p>
-          <Link href="/" className={`mt-6 ${buttonClasses()}`}>
-            Back to home
-          </Link>
+          <div className="mt-6 flex gap-3">
+            <Button variant="secondary" onClick={() => window.location.reload()}>
+              Try again
+            </Button>
+            <Link href="/" className={buttonClasses()}>
+              Back to home
+            </Link>
+          </div>
         </div>
       ) : (
         <main className="mx-auto grid max-w-5xl gap-8 px-4 py-8 sm:px-6 md:grid-cols-[3fr_2fr] md:items-center md:py-16">

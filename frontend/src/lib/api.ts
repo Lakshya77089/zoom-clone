@@ -34,27 +34,49 @@ function extractMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
+const REQUEST_TIMEOUT_MS = 15_000;
+const GET_ATTEMPTS = 3;
+const NETWORK_ERROR = "Unable to reach the server. Please check your connection.";
+
+async function send(url: string, init: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
 async function request<T>(path: string, { method = "GET", body, participantId }: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = { "X-Public-Origin": window.location.origin };
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (participantId !== undefined) headers["X-Participant-Id"] = String(participantId);
 
-  let response: Response;
-  try {
-    response = await fetch(`${API_URL}/api${path}`, {
-      method,
-      headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
-      cache: "no-store",
-    });
-  } catch {
-    throw new ApiError(0, "Unable to reach the server. Please check your connection.");
-  }
+  const init: RequestInit = {
+    method,
+    headers,
+    body: body === undefined ? undefined : JSON.stringify(body),
+    cache: "no-store",
+  };
+  const attempts = method === "GET" ? GET_ATTEMPTS : 1;
 
-  const payload = await response.json().catch(() => null);
+  let response: Response | null = null;
+  for (let attempt = 1; attempt <= attempts && response === null; attempt++) {
+    try {
+      response = await send(`${API_URL}/api${path}`, init);
+    } catch {
+      if (attempt === attempts) throw new ApiError(0, NETWORK_ERROR);
+    }
+  }
+  if (response === null) throw new ApiError(0, NETWORK_ERROR);
+
+  const isJson = response.headers.get("content-type")?.includes("application/json") ?? false;
+  const payload = isJson ? await response.json().catch(() => null) : null;
   if (!response.ok) {
     throw new ApiError(response.status, extractMessage(payload, "Something went wrong. Please try again."));
   }
+  if (!isJson) throw new ApiError(response.status, "Unexpected response from the server. Please reload the page.");
   return payload as T;
 }
 
