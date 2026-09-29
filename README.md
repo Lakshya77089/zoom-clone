@@ -113,7 +113,7 @@ On first start the database is created and seeded with a default user (Alex John
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local
+cp .env.example .env
 npm run dev
 ```
 
@@ -126,12 +126,15 @@ Open http://localhost:3000.
 | `DATABASE_URL` | backend | `sqlite:///./zoom.db` |
 | `FRONTEND_URL` | backend (used for invite links) | `http://localhost:3000` |
 | `CORS_ORIGINS` | backend, comma separated | `http://localhost:3000` |
-| `NEXT_PUBLIC_API_URL` | frontend | `http://localhost:8000` |
+| `BACKEND_URL` | frontend, build time (target of the `/api` proxy) | `http://localhost:8000` |
+| `NEXT_PUBLIC_API_URL` | frontend, optional (call the API directly instead of through the proxy) | empty |
+
+The frontend calls the API on its own origin at `/api/*`, and Next.js forwards those requests to `BACKEND_URL`. The browser never makes a cross-origin request, so the app works behind port forwarding or a tunnel with only port 3000 exposed. When accessing the app from another URL, set `FRONTEND_URL` on the backend to that URL so invite links point to it.
 
 ## Deployment
 
 - **Backend (Render/Railway)**: root directory `backend`, build command `pip install -r requirements.txt`, start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Set `FRONTEND_URL` and `CORS_ORIGINS` to the deployed frontend URL.
-- **Frontend (Vercel)**: root directory `frontend`. Set `NEXT_PUBLIC_API_URL` to the deployed backend URL.
+- **Frontend (Vercel)**: root directory `frontend`. Set `BACKEND_URL` to the deployed backend URL.
 
 On free hosting tiers the SQLite file lives on ephemeral disk, so it is re-seeded whenever the service restarts.
 
