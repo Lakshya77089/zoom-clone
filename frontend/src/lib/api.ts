@@ -4,6 +4,8 @@ import type {
   Participant,
   RoomState,
   ScheduleMeetingInput,
+  Signal,
+  SignalKind,
   User,
 } from "@/types";
 
@@ -22,6 +24,7 @@ interface RequestOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   participantId?: number;
+  attempts?: number;
 }
 
 type MediaChanges = Partial<Pick<Participant, "is_muted" | "is_video_on">>;
@@ -48,7 +51,10 @@ async function send(url: string, init: RequestInit): Promise<Response> {
   }
 }
 
-async function request<T>(path: string, { method = "GET", body, participantId }: RequestOptions = {}): Promise<T> {
+async function request<T>(
+  path: string,
+  { method = "GET", body, participantId, attempts: maxAttempts }: RequestOptions = {},
+): Promise<T> {
   const headers: Record<string, string> = { "X-Public-Origin": window.location.origin };
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (participantId !== undefined) headers["X-Participant-Id"] = String(participantId);
@@ -59,7 +65,7 @@ async function request<T>(path: string, { method = "GET", body, participantId }:
     body: body === undefined ? undefined : JSON.stringify(body),
     cache: "no-store",
   };
-  const attempts = method === "GET" ? GET_ATTEMPTS : 1;
+  const attempts = maxAttempts ?? (method === "GET" ? GET_ATTEMPTS : 1);
 
   let response: Response | null = null;
   for (let attempt = 1; attempt <= attempts && response === null; attempt++) {
@@ -109,4 +115,13 @@ export const api = {
     request<Participant[]>(`/meetings/${code}/participants/mute-all`, { method: "POST", participantId: hostId }),
   removeParticipant: (code: string, targetId: number, hostId: number) =>
     request<Participant>(`/meetings/${code}/participants/${targetId}`, { method: "DELETE", participantId: hostId }),
+  sendSignal: (code: string, senderId: number, recipientId: number, kind: SignalKind, payload: object = {}) =>
+    request<Signal>(`/meetings/${code}/signals`, {
+      method: "POST",
+      body: { recipient_id: recipientId, kind, payload },
+      participantId: senderId,
+      attempts: 3,
+    }),
+  receiveSignals: (code: string, participantId: number, after: number) =>
+    request<Signal[]>(`/meetings/${code}/signals?after=${after}`, { participantId }),
 };

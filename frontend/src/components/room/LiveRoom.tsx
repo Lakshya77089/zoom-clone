@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { MeetingInfo } from "@/components/room/MeetingInfo";
 import { MeetingToolbar } from "@/components/room/MeetingToolbar";
 import { ParticipantsPanel } from "@/components/room/ParticipantsPanel";
+import { RemoteAudio } from "@/components/room/RemoteAudio";
 import { VideoGrid } from "@/components/room/VideoGrid";
 import { useLocalMedia } from "@/hooks/useLocalMedia";
+import { usePeerMesh } from "@/hooks/usePeerMesh";
 import { api } from "@/lib/api";
 import { clearParticipantId } from "@/lib/participantSession";
 import type { Participant, RoomState } from "@/types";
@@ -38,6 +40,12 @@ export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
   const [panelOpen, setPanelOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const { stream, error: mediaError } = useLocalMedia({ audioEnabled: !me.is_muted, videoEnabled: me.is_video_on });
+  const remoteStreams = usePeerMesh(
+    code,
+    me.id,
+    participants.map((p) => p.id),
+    stream,
+  );
 
   useEffect(() => {
     if (!toast) return;
@@ -90,7 +98,12 @@ export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
 
       <div className="relative flex min-h-0 flex-1">
         <main className="min-h-0 min-w-0 flex-1">
-          <VideoGrid participants={participants} selfId={me.id} stream={stream} />
+          <VideoGrid participants={participants} selfId={me.id} localStream={stream} remoteStreams={remoteStreams} />
+          {participants
+            .filter((p) => p.id !== me.id && remoteStreams.has(p.id))
+            .map((p) => (
+              <RemoteAudio key={p.id} participantId={p.id} stream={remoteStreams.get(p.id)!} />
+            ))}
         </main>
 
         {panelOpen && (

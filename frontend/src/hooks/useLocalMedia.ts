@@ -9,9 +9,20 @@ interface LocalMediaOptions {
 
 const UNAVAILABLE_MESSAGE = "Camera and microphone are unavailable. Check your browser permissions.";
 
-function requestMedia(): Promise<MediaStream> {
-  if (!navigator.mediaDevices?.getUserMedia) return Promise.reject(new Error(UNAVAILABLE_MESSAGE));
-  return navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+const CONSTRAINT_FALLBACKS: MediaStreamConstraints[] = [
+  { video: true, audio: true },
+  { audio: true },
+  { video: true },
+];
+
+async function requestMedia(): Promise<MediaStream> {
+  if (!navigator.mediaDevices?.getUserMedia) throw new Error(UNAVAILABLE_MESSAGE);
+  for (const constraints of CONSTRAINT_FALLBACKS) {
+    try {
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    } catch {}
+  }
+  throw new Error(UNAVAILABLE_MESSAGE);
 }
 
 export function useLocalMedia({ audioEnabled, videoEnabled }: LocalMediaOptions) {

@@ -2,17 +2,26 @@
 
 import { useEffect, useRef } from "react";
 
-interface SelfVideoProps {
+interface StreamVideoProps {
   stream: MediaStream;
+  mirrored?: boolean;
   className?: string;
 }
 
-export function SelfVideo({ stream, className = "" }: SelfVideoProps) {
+export function StreamVideo({ stream, mirrored = false, className = "" }: StreamVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (videoRef.current) videoRef.current.srcObject = stream;
   }, [stream]);
 
-  return <video ref={videoRef} autoPlay playsInline muted className={`h-full w-full -scale-x-100 object-cover ${className}`} />;
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      playsInline
+      muted
+      className={`h-full w-full object-cover ${mirrored ? "-scale-x-100" : ""} ${className}`}
+    />
+  );
 }

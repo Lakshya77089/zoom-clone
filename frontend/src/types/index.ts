@@ -2,6 +2,7 @@ export type MeetingType = "instant" | "scheduled";
 export type MeetingStatus = "scheduled" | "live" | "ended";
 export type ParticipantRole = "host" | "attendee";
 export type ParticipantStatus = "active" | "left" | "removed";
+export type SignalKind = "hello" | "offer" | "answer" | "candidate";
 
 export interface User {
   id: number;
@@ -56,4 +57,12 @@ export interface ScheduleMeetingInput {
   description?: string;
   start_time: string;
   duration_minutes: number;
+}
+
+export interface Signal {
+  id: number;
+  sender_id: number;
+  kind: SignalKind;
+  payload: Record<string, unknown>;
+  created_at: string;
 }

@@ -8,7 +8,7 @@ import { Button, buttonClasses } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { ZoomLogo } from "@/components/ui/ZoomLogo";
 import { MediaIconButton } from "@/components/room/MediaIconButton";
-import { SelfVideo } from "@/components/room/SelfVideo";
+import { StreamVideo } from "@/components/room/StreamVideo";
 import { useEnterMeeting } from "@/hooks/useEnterMeeting";
 import { useLocalMedia } from "@/hooks/useLocalMedia";
 import { api } from "@/lib/api";
@@ -80,7 +80,7 @@ export function PreJoinScreen({ code }: PreJoinScreenProps) {
         <main className="mx-auto grid max-w-5xl gap-8 px-4 py-8 sm:px-6 md:grid-cols-[3fr_2fr] md:items-center md:py-16">
           <div className="relative aspect-video overflow-hidden rounded-2xl bg-room">
             {stream && videoOn ? (
-              <SelfVideo stream={stream} />
+              <StreamVideo stream={stream} mirrored />
             ) : (
               <div className="flex h-full items-center justify-center">
                 <Avatar name={name || "Guest"} size="xl" />
