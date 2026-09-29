@@ -3,6 +3,7 @@ import type {
   MeetingSession,
   Participant,
   RoomState,
+  RtcConfig,
   ScheduleMeetingInput,
   Signal,
   SignalKind,
@@ -122,6 +123,7 @@ export const api = {
       participantId: senderId,
       attempts: 3,
     }),
+  getRtcConfig: () => request<RtcConfig>("/rtc/ice-servers"),
   receiveSignals: (code: string, participantId: number, after: number) =>
     request<Signal[]>(`/meetings/${code}/signals?after=${after}`, { participantId }),
 };

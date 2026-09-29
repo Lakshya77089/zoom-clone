@@ -40,7 +40,7 @@ export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
   const [panelOpen, setPanelOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const { stream, error: mediaError } = useLocalMedia({ audioEnabled: !me.is_muted, videoEnabled: me.is_video_on });
-  const remoteStreams = usePeerMesh(
+  const mesh = usePeerMesh(
     code,
     me.id,
     participants.map((p) => p.id),
@@ -98,11 +98,11 @@ export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
 
       <div className="relative flex min-h-0 flex-1">
         <main className="min-h-0 min-w-0 flex-1">
-          <VideoGrid participants={participants} selfId={me.id} localStream={stream} remoteStreams={remoteStreams} />
+          <VideoGrid participants={participants} selfId={me.id} localStream={stream} mesh={mesh} />
           {participants
-            .filter((p) => p.id !== me.id && remoteStreams.has(p.id))
+            .filter((p) => p.id !== me.id && mesh.streams.has(p.id))
             .map((p) => (
-              <RemoteAudio key={p.id} participantId={p.id} stream={remoteStreams.get(p.id)!} />
+              <RemoteAudio key={p.id} participantId={p.id} stream={mesh.streams.get(p.id)!} />
             ))}
         </main>
 

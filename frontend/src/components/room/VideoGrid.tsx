@@ -1,12 +1,12 @@
 import { VideoTile } from "@/components/room/VideoTile";
-import type { RemoteStreams } from "@/lib/peerMesh";
+import type { MeshState } from "@/lib/peerMesh";
 import type { Participant } from "@/types";
 
 interface VideoGridProps {
   participants: Participant[];
   selfId: number;
   localStream: MediaStream | null;
-  remoteStreams: RemoteStreams;
+  mesh: MeshState;
 }
 
 function gridClass(count: number): string {
@@ -17,7 +17,7 @@ function gridClass(count: number): string {
   return "grid-cols-3 md:grid-cols-4";
 }
 
-export function VideoGrid({ participants, selfId, localStream, remoteStreams }: VideoGridProps) {
+export function VideoGrid({ participants, selfId, localStream, mesh }: VideoGridProps) {
   const ordered = [...participants].sort((a, b) => Number(b.id === selfId) - Number(a.id === selfId));
 
   return (
@@ -29,7 +29,8 @@ export function VideoGrid({ participants, selfId, localStream, remoteStreams }: 
             key={participant.id}
             participant={participant}
             isSelf={isSelf}
-            stream={isSelf ? localStream : (remoteStreams.get(participant.id) ?? null)}
+            stream={isSelf ? localStream : (mesh.streams.get(participant.id) ?? null)}
+            status={isSelf ? undefined : mesh.statuses.get(participant.id)}
           />
         );
       })}

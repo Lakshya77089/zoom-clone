@@ -1,17 +1,25 @@
 import { MicOff } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { StreamVideo } from "@/components/room/StreamVideo";
+import type { PeerStatus } from "@/lib/peerMesh";
 import type { Participant } from "@/types";
 
 interface VideoTileProps {
   participant: Participant;
   isSelf: boolean;
   stream: MediaStream | null;
+  status?: PeerStatus;
 }
 
-export function VideoTile({ participant, isSelf, stream }: VideoTileProps) {
+const statusLabels: Record<Exclude<PeerStatus, "connected">, string> = {
+  connecting: "Connecting...",
+  failed: "Can't connect. Retrying...",
+};
+
+export function VideoTile({ participant, isSelf, stream, status = "connecting" }: VideoTileProps) {
   const hasVideo = (stream?.getVideoTracks().length ?? 0) > 0;
-  const showVideo = stream && hasVideo && participant.is_video_on;
+  const isLive = isSelf || status === "connected";
+  const showVideo = stream && hasVideo && participant.is_video_on && isLive;
 
   return (
     <div
@@ -28,8 +36,15 @@ export function VideoTile({ participant, isSelf, stream }: VideoTileProps) {
         {participant.is_muted && <MicOff size={12} className="shrink-0 text-zoom-red" aria-label="Muted" />}
         <span className="truncate">{participant.display_name}</span>
       </div>
-      {!isSelf && !stream && (
-        <span className="absolute right-2 top-2 rounded bg-black/60 px-2 py-0.5 text-[11px] text-white/80">Connecting...</span>
+      {!isLive && (
+        <span
+          className={`absolute right-2 top-2 rounded px-2 py-0.5 text-[11px] ${
+            status === "failed" ? "bg-zoom-red/90 text-white" : "bg-black/60 text-white/80"
+          }`}
+          data-testid="peer-status"
+        >
+          {statusLabels[status as Exclude<PeerStatus, "connected">]}
+        </span>
       )}
     </div>
   );

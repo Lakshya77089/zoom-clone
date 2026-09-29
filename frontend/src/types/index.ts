@@ -66,3 +66,14 @@ export interface Signal {
   payload: Record<string, unknown>;
   created_at: string;
 }
+
+export interface IceServer {
+  urls: string | string[];
+  username?: string | null;
+  credential?: string | null;
+}
+
+export interface RtcConfig {
+  ice_servers: IceServer[];
+  ice_transport_policy: "all" | "relay";
+}

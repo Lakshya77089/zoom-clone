@@ -1,13 +1,17 @@
 import { api } from "@/lib/api";
-import { rtcConfiguration } from "@/lib/rtc";
 import type { Signal, SignalKind } from "@/types";
 
 const SIGNAL_POLL_MS = 700;
-const CONNECT_TIMEOUT_MS = 15_000;
+const CONNECT_TIMEOUT_MS = 20_000;
 const RECONNECT_DELAY_MS = 1_000;
 const MEDIA_KINDS = ["audio", "video"] as const;
 
-export type RemoteStreams = Map<number, MediaStream>;
+export type PeerStatus = "connecting" | "connected" | "failed";
+
+export interface MeshState {
+  streams: Map<number, MediaStream>;
+  statuses: Map<number, PeerStatus>;
+}
 
 interface Peer {
   pc: RTCPeerConnection;
@@ -18,6 +22,8 @@ interface Peer {
 export class PeerMesh {
   private peers = new Map<number, Peer>();
   private wanted = new Set<number>();
+  private connected = new Set<number>();
+  private failures = new Map<number, number>();
   private greeted = false;
   private localStream: MediaStream | null = null;
   private cursor = 0;
@@ -27,7 +33,8 @@ export class PeerMesh {
   constructor(
     private readonly code: string,
     private readonly selfId: number,
-    private readonly onStreams: (streams: RemoteStreams) => void,
+    private readonly configuration: RTCConfiguration,
+    private readonly onChange: (state: MeshState) => void,
   ) {}
 
   start(): void {
@@ -51,6 +58,7 @@ export class PeerMesh {
     for (const id of [...this.peers.keys()]) {
       if (!this.wanted.has(id)) {
         this.closePeer(id);
+        this.failures.delete(id);
         changed = true;
       }
     }
@@ -97,8 +105,9 @@ export class PeerMesh {
     }
 
     if (signal.kind === "offer") {
-      this.closePeer(peerId);
+      this.abandon(peerId);
       const { pc } = this.createPeer(peerId);
+      this.emit();
       await pc.setRemoteDescription(signal.payload as unknown as RTCSessionDescriptionInit);
       this.attachLocalTracks(pc);
       await pc.setLocalDescription(await pc.createAnswer());
@@ -124,22 +133,22 @@ export class PeerMesh {
 
   private async call(peerId: number): Promise<void> {
     const { pc } = this.createPeer(peerId);
+    this.emit();
     for (const kind of MEDIA_KINDS) pc.addTransceiver(kind, { direction: "sendrecv" });
     this.attachLocalTracks(pc);
     await pc.setLocalDescription(await pc.createOffer());
     await this.send(peerId, "offer", pc.localDescription?.toJSON()).catch(() => undefined);
 
     window.setTimeout(() => {
-      const current = this.peers.get(peerId);
-      if (this.stopped || current?.pc !== pc || pc.connectionState === "connected") return;
-      this.closePeer(peerId);
+      if (this.stopped || this.peers.get(peerId)?.pc !== pc || pc.connectionState === "connected") return;
+      this.abandon(peerId);
       this.emit();
       if (this.wanted.has(peerId)) void this.call(peerId);
     }, CONNECT_TIMEOUT_MS);
   }
 
   private createPeer(peerId: number): Peer {
-    const pc = new RTCPeerConnection(rtcConfiguration);
+    const pc = new RTCPeerConnection(this.configuration);
     const peer: Peer = { pc, stream: new MediaStream(), pendingCandidates: [] };
     this.peers.set(peerId, peer);
 
@@ -155,8 +164,20 @@ export class PeerMesh {
     };
 
     pc.onconnectionstatechange = () => {
-      if (pc.connectionState !== "failed" || this.peers.get(peerId) !== peer) return;
-      this.closePeer(peerId);
+      if (this.peers.get(peerId) !== peer) return;
+      if (pc.connectionState === "connected") {
+        this.connected.add(peerId);
+        this.failures.delete(peerId);
+        this.emit();
+        return;
+      }
+      if (pc.connectionState === "disconnected") {
+        this.connected.delete(peerId);
+        this.emit();
+        return;
+      }
+      if (pc.connectionState !== "failed") return;
+      this.abandon(peerId);
       this.emit();
       if (this.isCaller(peerId)) {
         window.setTimeout(() => {
@@ -185,8 +206,16 @@ export class PeerMesh {
     for (const candidate of queued) await peer.pc.addIceCandidate(candidate).catch(() => undefined);
   }
 
+  private abandon(peerId: number): void {
+    if (this.peers.has(peerId) && !this.connected.has(peerId)) {
+      this.failures.set(peerId, (this.failures.get(peerId) ?? 0) + 1);
+    }
+    this.closePeer(peerId);
+  }
+
   private closePeer(peerId: number): void {
     const peer = this.peers.get(peerId);
+    this.connected.delete(peerId);
     if (!peer) return;
     this.peers.delete(peerId);
     peer.pc.onicecandidate = null;
@@ -195,11 +224,23 @@ export class PeerMesh {
     peer.pc.close();
   }
 
+  private status(peerId: number): PeerStatus {
+    if (this.connected.has(peerId)) return "connected";
+    return (this.failures.get(peerId) ?? 0) > 0 ? "failed" : "connecting";
+  }
+
   private send(peerId: number, kind: SignalKind, payload: object = {}) {
     return api.sendSignal(this.code, this.selfId, peerId, kind, payload);
   }
 
   private emit(): void {
-    this.onStreams(new Map([...this.peers].map(([id, peer]) => [id, peer.stream])));
+    const streams = new Map<number, MediaStream>();
+    const statuses = new Map<number, PeerStatus>();
+    for (const id of this.wanted) {
+      const peer = this.peers.get(id);
+      if (peer) streams.set(id, peer.stream);
+      statuses.set(id, this.status(id));
+    }
+    this.onChange({ streams, statuses });
   }
 }
