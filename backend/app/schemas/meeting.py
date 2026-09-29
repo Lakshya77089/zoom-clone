@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, computed_field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from app.core.config import settings
 from app.models.enums import MeetingStatus, MeetingType
 from app.schemas.common import UTCDateTime
 from app.schemas.participant import ParticipantOut
@@ -37,11 +36,13 @@ class MeetingOut(BaseModel):
     created_at: UTCDateTime
     participant_count: int
     host: UserOut
+    invite_link: str = ""
 
-    @computed_field
-    @property
-    def invite_link(self) -> str:
-        return f"{settings.frontend_url.rstrip('/')}/j/{self.meeting_code}"
+    @classmethod
+    def present(cls, meeting, public_url: str) -> "MeetingOut":
+        out = cls.model_validate(meeting)
+        out.invite_link = f"{public_url.rstrip('/')}/j/{out.meeting_code}"
+        return out
 
 
 class MeetingSessionOut(BaseModel):

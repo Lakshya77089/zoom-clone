@@ -66,7 +66,7 @@ participants
 
 - A user hosts many meetings, and a meeting has many participants.
 - Participants are separate rows for each join, so meeting history (who joined, when, and whether they left or were removed) is kept.
-- The invite link is not stored. The API builds it from `FRONTEND_URL` and the meeting code, so it stays correct if the domain changes.
+- The invite link is not stored. The API builds it from the address the app was opened on (the frontend sends it in an `X-Public-Origin` header) and the meeting code, so links stay correct on localhost, behind a tunnel, or on a deployed domain. `FRONTEND_URL` is the fallback.
 - All timestamps are stored in UTC and returned as ISO 8601 strings with a `Z` suffix.
 
 ## API
@@ -124,12 +124,12 @@ Open http://localhost:3000.
 | Variable | Where | Default |
 | -------- | ----- | ------- |
 | `DATABASE_URL` | backend | `sqlite:///./zoom.db` |
-| `FRONTEND_URL` | backend (used for invite links) | `http://localhost:3000` |
+| `FRONTEND_URL` | backend (fallback base for invite links) | `http://localhost:3000` |
 | `CORS_ORIGINS` | backend, comma separated | `http://localhost:3000` |
 | `BACKEND_URL` | frontend, build time (target of the `/api` proxy) | `http://localhost:8000` |
 | `NEXT_PUBLIC_API_URL` | frontend, optional (call the API directly instead of through the proxy) | empty |
 
-The frontend calls the API on its own origin at `/api/*`, and Next.js forwards those requests to `BACKEND_URL`. The browser never makes a cross-origin request, so the app works behind port forwarding or a tunnel with only port 3000 exposed. When accessing the app from another URL, set `FRONTEND_URL` on the backend to that URL so invite links point to it.
+The frontend calls the API on its own origin at `/api/*`, and Next.js forwards those requests to `BACKEND_URL`. The browser never makes a cross-origin request, so the app works behind port forwarding or a tunnel with only port 3000 exposed. Invite links automatically use whichever URL the app was opened on.
 
 ## Deployment
 

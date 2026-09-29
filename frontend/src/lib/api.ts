@@ -35,7 +35,7 @@ function extractMessage(payload: unknown, fallback: string): string {
 }
 
 async function request<T>(path: string, { method = "GET", body, participantId }: RequestOptions = {}): Promise<T> {
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { "X-Public-Origin": window.location.origin };
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (participantId !== undefined) headers["X-Participant-Id"] = String(participantId);
 
