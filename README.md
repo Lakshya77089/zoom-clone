@@ -12,11 +12,13 @@ A video conferencing web app modeled on the Zoom web client. You can start insta
 
 ## Features
 
-- **Dashboard**: navbar with profile and settings, plus New meeting / Join / Schedule actions, live clock, upcoming meetings grouped by day, and recent meetings.
+- **Dashboard**: Zoom Workplace style shell with a header (meeting search with `Ctrl+K`, settings, profile menu), a left navigation rail (a bottom tab bar on mobile), New meeting / Join / Schedule actions, a live clock, upcoming meetings grouped by day, and recent meetings. Each meeting card shows the time, duration and meeting ID, a Start / Join button, and a menu to copy the invitation, invite link or meeting ID, or delete a scheduled meeting.
+- **Meetings page**: Upcoming and Previous tabs with search by topic or meeting ID.
+- **Settings page**: profile placeholder for the seeded user and meeting preferences (join muted, join with video off, show invite details when starting a meeting), stored in the browser.
 - **Instant meeting**: generates a unique 11-digit meeting ID and a shareable invite link (`/j/<meeting id>`), then takes the host straight into the room.
-- **Join meeting**: accepts a meeting ID (with or without spaces) or a full invite link. You enter a display name first, and the meeting's existence is checked before joining. Invite links open a pre-join screen with a camera and mic preview.
+- **Join meeting**: accepts a meeting ID (with or without spaces) or a full invite link, from the Join dialog or the standalone `/join` page. You enter a display name first, and the meeting's existence is checked before joining. Each field shows its own error (invalid ID, meeting not found, meeting ended, missing name). Invite links open a pre-join screen with a camera and mic preview.
 - **Schedule meeting**: topic, description, date and time pickers, and duration. The meeting ID and link are generated automatically, the meeting is stored in SQLite, and it appears under Upcoming meetings. After saving you can copy the invitation.
-- **Meeting room**: live video and audio between all participants over WebRTC, mute and video toggles, participant grid, participants panel, meeting info with a copy-link button, and leave / end meeting.
+- **Meeting room**: live video and audio between all participants over WebRTC, mute and video toggles, participant grid, participants panel, a More menu (copy invite link, invitation or meeting ID, and mute all for the host), meeting info with a copy-link button, and leave / end meeting.
 - **Host controls**: mute all, remove a participant, and end the meeting for everyone. If the host leaves, host is passed to the next participant.
 - **Responsive**: works on mobile, tablet and desktop.
 
@@ -35,11 +37,15 @@ backend/
     main.py        app entrypoint
 frontend/
   src/
-    app/           routes: / (dashboard), /j/[code] (pre-join), /wc/[code] (meeting room)
-    components/    ui, layout, dashboard, modals, prejoin, room
-    hooks/         data fetching, polling, media, clipboard helpers
-    lib/           API client, formatting, meeting-code parsing
+    app/           routes: / (dashboard), /meetings, /settings, /join, /j/[code] (pre-join), /wc/[code] (meeting room)
+    components/    ui, layout, dashboard, meetings, join, schedule, settings, prejoin, room
+    constants/     routes, navigation, limits and shared messages
+    hooks/         data fetching, polling, media, clipboard, preferences
+    lib/           API client, formatting, meeting-code parsing, preferences
     types/         shared TypeScript types
+  tests/e2e/       Playwright specs
+  cypress/         Cypress specs and support commands
+  scripts/         test server setup shared by both suites
 ```
 
 The backend follows an MVC split. **Models** hold the schema, **schemas** are the views that shape API input and output, and **controllers** hold all business rules. Routes only wire HTTP to controllers. Controllers raise domain errors (`NotFoundError`, `ForbiddenError`, `MeetingEndedError`, …), and one handler turns them into HTTP responses.
@@ -88,6 +94,7 @@ Base URL: `/api`. Interactive docs are at `/docs` once the backend is running.
 | POST   | `/meetings/instant` | Create and start an instant meeting |
 | POST   | `/meetings` | Schedule a meeting |
 | GET    | `/meetings/{code}` | Check that a meeting exists and can be joined |
+| DELETE | `/meetings/{code}` | Host deletes a scheduled meeting that has not started |
 | POST   | `/meetings/{code}/start` | Host starts or rejoins a meeting |
 | POST   | `/meetings/{code}/join` | Join with a display name |
 | POST   | `/meetings/{code}/end` | Host ends the meeting for everyone |
@@ -148,6 +155,22 @@ Open http://localhost:3000.
 
 The frontend calls the API on its own origin at `/api/*`, and Next.js forwards those requests to `BACKEND_URL`. The browser never makes a cross-origin request, so the app works behind port forwarding or a tunnel with only port 3000 exposed. Invite links automatically use whichever URL the app was opened on.
 
+## Testing
+
+Both suites live in `frontend` and run against their own servers: a backend on port 8100 with a separate `e2e.db`, and a production build of the frontend (in `.next-e2e`) on port 3100. They start automatically, and servers that are already running on those ports are reused. Your dev database is never touched.
+
+```bash
+cd frontend
+npx playwright install chromium   # first run only
+npm run test:e2e        # Playwright: flows, validation, meeting room, responsive checks, screenshots
+npm run test:cypress    # Cypress: navigation, preferences, stubbed network states, full workflow
+npm test                # both
+```
+
+- Set `E2E_BASE_URL` to run against an app that is already running (for example `E2E_BASE_URL=http://localhost:3000`). Nothing is started in that case.
+- Playwright runs with a fake camera and microphone and saves screenshots of the dashboard, dialogs and meeting room to `test-results/screenshots`.
+- The backend venv is expected at `backend/.venv`. Set `E2E_PYTHON` to use a different Python.
+
 ## Deployment
 
 - **Backend (Render/Railway)**: root directory `backend`, build command `pip install -r requirements.txt`, start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Set `FRONTEND_URL` and `CORS_ORIGINS` to the deployed frontend URL.
@@ -165,5 +188,6 @@ On free hosting tiers the SQLite file lives on ephemeral disk, so it is re-seede
 - Each remote tile shows "Connecting..." until media is actually flowing, and "Can't connect" if the two networks can't reach each other.
 - Participant list, mute/video status and host actions sync through the API, which the room polls every 2 seconds. Mute and video off disable the local tracks, so muted audio is silent for everyone.
 - A meeting ends when the host ends it for everyone, or when the last participant leaves. Ended meetings can't be joined again and show up under Recent meetings.
-- Features not in the assignment (chat, screen share, recording, reactions, other navbar tabs) appear as disabled buttons to keep the Zoom layout, but they have no functionality.
+- Features not in the assignment (chat, screen share, recording, reactions) are left out rather than shown as buttons that do nothing.
+- Zoom's own typeface is proprietary, so the UI uses Inter.
 - Scheduled meetings must start in the future and last between 15 minutes and 24 hours.
