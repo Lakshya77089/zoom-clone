@@ -44,6 +44,7 @@ describe("Scheduled meeting workflow", () => {
     const title = `Keep Me ${Date.now()}`;
     cy.scheduleMeeting(title).then((meeting) => {
       cy.visitDashboard();
+      cy.showUpcomingDay(meeting.scheduled_start!);
       cy.get(`[data-meeting-code="${meeting.meeting_code}"]`).find('[data-testid="meeting-more-button"]').click();
       cy.getByTestId("delete-meeting").click();
       cy.getByTestId("confirm-dialog").contains("button", "Cancel").click();
@@ -55,6 +56,7 @@ describe("Scheduled meeting workflow", () => {
   it("supports keyboard navigation in the meeting card menu", () => {
     cy.scheduleMeeting(`Keyboard ${Date.now()}`).then((meeting) => {
       cy.visitDashboard();
+      cy.showUpcomingDay(meeting.scheduled_start!);
       cy.get(`[data-meeting-code="${meeting.meeting_code}"]`).find('[data-testid="meeting-more-button"]').click();
       cy.focused().should("have.attr", "role", "menuitem").and("contain", "Copy invitation");
       cy.focused().type("{downArrow}");

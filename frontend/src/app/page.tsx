@@ -46,6 +46,8 @@ export default function HomePage() {
             startingCode={launcher.startingCode}
             onStart={(meeting) => void launcher.startMeeting(meeting)}
             onDelete={deletion.requestDelete}
+            onRefresh={() => void refresh()}
+            onSchedule={() => setDialog("schedule")}
           />
 
           <RecentMeetings

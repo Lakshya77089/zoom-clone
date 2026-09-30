@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { openDashboard, scheduleViaApi, uniqueTitle } from "./support";
+import { openDashboard, scheduleViaApi, showUpcomingDay, uniqueTitle } from "./support";
 
 function inputDate(date: Date): string {
   const pad = (value: number) => String(value).padStart(2, "0");
@@ -31,6 +31,7 @@ test.describe("Schedule meeting", () => {
     await expect(page.getByTestId("scheduled-invite-link")).toHaveText(/\/j\/\d{11}$/);
 
     await page.getByTestId("schedule-done").click();
+    await showUpcomingDay(page, tomorrow);
     const card = page.getByTestId("upcoming-meeting").filter({ hasText: title });
     await expect(card).toBeVisible();
     await expect(card).toContainText("1 hr 30 min");
@@ -59,6 +60,7 @@ test.describe("Schedule meeting", () => {
     const title = uniqueTitle("Card Start");
     const meeting = await scheduleViaApi(request, title);
     await openDashboard(page);
+    await showUpcomingDay(page, meeting.scheduled_start!);
 
     await page.locator(`[data-meeting-code="${meeting.meeting_code}"]`).getByTestId("meeting-start-button").click();
     await expect(page).toHaveURL(new RegExp(`/wc/${meeting.meeting_code}$`));
@@ -70,6 +72,7 @@ test.describe("Schedule meeting", () => {
     const title = uniqueTitle("Delete Me");
     const meeting = await scheduleViaApi(request, title);
     await openDashboard(page);
+    await showUpcomingDay(page, meeting.scheduled_start!);
 
     const card = page.locator(`[data-meeting-code="${meeting.meeting_code}"]`);
     await card.getByTestId("meeting-more-button").click();
@@ -86,6 +89,7 @@ test.describe("Schedule meeting", () => {
   test("meeting card menu copies the invite link", async ({ page, request }) => {
     const meeting = await scheduleViaApi(request, uniqueTitle("Copy Link"));
     await openDashboard(page);
+    await showUpcomingDay(page, meeting.scheduled_start!);
 
     await page.locator(`[data-meeting-code="${meeting.meeting_code}"]`).getByTestId("meeting-more-button").click();
     await page.getByTestId("copy-invite-link").click();

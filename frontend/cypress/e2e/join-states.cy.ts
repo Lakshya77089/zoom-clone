@@ -72,4 +72,34 @@ describe("Dashboard states", () => {
     cy.get('[aria-label="Loading meetings"]').should("exist");
     cy.get('[aria-label="Loading meetings"]').should("not.exist");
   });
+
+  it("jumps from an empty day to the next day with meetings", () => {
+    const start = new Date();
+    start.setDate(start.getDate() + 3);
+    start.setHours(10, 0, 0, 0);
+    const meeting = {
+      id: 9001,
+      meeting_code: "12312312312",
+      title: "Stubbed Planning Session",
+      description: null,
+      meeting_type: "scheduled",
+      status: "scheduled",
+      scheduled_start: start.toISOString(),
+      scheduled_end: new Date(start.getTime() + 30 * 60_000).toISOString(),
+      duration_minutes: 30,
+      started_at: null,
+      ended_at: null,
+      created_at: new Date().toISOString(),
+      participant_count: 0,
+      host: { id: 1, name: "Alex Johnson", email: "alex.johnson@example.com", avatar_color: "#F26D21" },
+      invite_link: "http://localhost/j/12312312312",
+    };
+    cy.intercept("GET", "/api/meetings/upcoming", [meeting]);
+    cy.visit("/");
+    cy.getByTestId("upcoming-empty").should("contain", "No meetings scheduled.");
+    cy.getByTestId("calendar-jump-next").should("contain", "Next meeting").click();
+    cy.getByTestId("upcoming-meeting").should("have.length", 1).and("contain", "Stubbed Planning Session");
+    cy.getByTestId("calendar-today").should("have.attr", "aria-pressed", "false").click();
+    cy.getByTestId("upcoming-empty").should("exist");
+  });
 });

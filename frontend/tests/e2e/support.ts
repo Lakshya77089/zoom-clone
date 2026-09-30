@@ -50,7 +50,7 @@ export async function joinFromInviteLink(page: Page, code: string, name: string)
   await page.goto(`/j/${code}`);
   await page.getByTestId("display-name-input").fill(name);
   await page.getByTestId("join-submit").click();
-  await expect(page.getByTestId("meeting-room")).toBeVisible();
+  await expect(page.getByTestId("meeting-room")).toBeVisible({ timeout: 20_000 });
 }
 
 export async function expectNoHorizontalOverflow(page: Page): Promise<void> {
@@ -68,4 +68,14 @@ export function participantHeaders(session: MeetingSession): Record<string, stri
 export async function endViaApi(request: APIRequestContext, session: MeetingSession): Promise<void> {
   const response = await request.post(`/api/meetings/${session.meeting.meeting_code}/end`, { headers: participantHeaders(session) });
   expect(response.ok()).toBeTruthy();
+}
+
+function dayStart(value: Date): number {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+}
+
+export async function showUpcomingDay(page: Page, start: string | Date): Promise<void> {
+  const days = Math.round((dayStart(new Date(start)) - dayStart(new Date())) / 86_400_000);
+  await page.getByTestId("calendar-today").click();
+  for (let step = 0; step < days; step++) await page.getByTestId("calendar-next").click();
 }

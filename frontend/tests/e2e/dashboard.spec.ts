@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { openDashboard, scheduleViaApi, uniqueTitle } from "./support";
+import { openDashboard, scheduleViaApi, showUpcomingDay, uniqueTitle } from "./support";
 
 test.describe("Dashboard", () => {
   test("loads the header, actions and meeting sections", async ({ page }) => {
@@ -19,6 +19,7 @@ test.describe("Dashboard", () => {
     const title = uniqueTitle("Card details");
     const meeting = await scheduleViaApi(request, title, { minutesFromNow: 90, duration: 45 });
     await openDashboard(page);
+    await showUpcomingDay(page, meeting.scheduled_start!);
 
     const card = page.locator(`[data-meeting-code="${meeting.meeting_code}"]`);
     await expect(card.getByTestId("meeting-title")).toHaveText(title);
@@ -65,5 +66,53 @@ test.describe("Dashboard", () => {
     await page.getByTestId("meetings-search").fill(meeting.meeting_code.replace(/(\d{3})(\d{4})(\d+)/, "$1 $2 $3"));
     await expect(page.getByTestId("upcoming-meeting")).toHaveCount(1);
     await expect(page.getByTestId("meeting-title")).toHaveText(title);
+  });
+
+  test("calendar strip moves between days, returns to today and its menu works", async ({ page, request }) => {
+    const inTwoDays = new Date();
+    inTwoDays.setDate(inTwoDays.getDate() + 2);
+    inTwoDays.setHours(11, 0, 0, 0);
+    const minutesFromNow = Math.round((inTwoDays.getTime() - Date.now()) / 60_000);
+    const meeting = await scheduleViaApi(request, uniqueTitle("Two days out"), { minutesFromNow });
+    const card = page.locator(`[data-meeting-code="${meeting.meeting_code}"]`);
+    await openDashboard(page);
+
+    const today = page.getByTestId("calendar-today");
+    const previous = page.getByTestId("calendar-prev");
+    const next = page.getByTestId("calendar-next");
+    const label = page.getByTestId("calendar-date");
+    await expect(today).toHaveAttribute("aria-pressed", "true");
+    await expect(previous).toBeDisabled();
+    const todayLabel = (await label.textContent())!;
+
+    await next.click();
+    await next.click();
+    await expect(label).not.toHaveText(todayLabel);
+    await expect(today).toHaveAttribute("aria-pressed", "false");
+    await expect(card).toBeVisible();
+
+    await previous.click();
+    await expect(card).toHaveCount(0);
+
+    await today.click();
+    await expect(label).toHaveText(todayLabel);
+    await expect(previous).toBeDisabled();
+
+    const later = await scheduleViaApi(request, uniqueTitle("Added later"), { minutesFromNow: minutesFromNow + 30 });
+    await next.click();
+    await next.click();
+    await expect(page.locator(`[data-meeting-code="${later.meeting_code}"]`)).toHaveCount(0);
+    await page.getByTestId("calendar-more").click();
+    await page.getByTestId("calendar-refresh").click();
+    await expect(page.locator(`[data-meeting-code="${later.meeting_code}"]`)).toBeVisible();
+
+    await page.getByTestId("calendar-more").click();
+    await page.getByTestId("calendar-schedule").click();
+    await expect(page.getByTestId("schedule-meeting-modal")).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    await page.getByTestId("calendar-more").click();
+    await page.getByTestId("calendar-open-meetings").click();
+    await expect(page).toHaveURL(/\/meetings$/);
   });
 });

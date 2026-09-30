@@ -19,13 +19,29 @@ export function formatLongDate(value: Date): string {
   return value.toLocaleDateString(LOCALE, { weekday: "long", month: "long", day: "numeric" });
 }
 
-function startOfDay(value: Date): number {
-  return new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+export function startOfDay(value: Date): Date {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+}
+
+export function addDays(value: Date, days: number): Date {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate() + days);
+}
+
+export function isSameDay(value: string | Date, day: Date): boolean {
+  return startOfDay(new Date(value)).getTime() === startOfDay(day).getTime();
+}
+
+export function daysBetween(from: Date, to: Date): number {
+  return Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / MS_PER_DAY);
+}
+
+export function formatShortDate(value: Date): string {
+  return value.toLocaleDateString(LOCALE, { weekday: "short", month: "short", day: "numeric" });
 }
 
 export function formatDayLabel(value: string): string {
   const date = new Date(value);
-  const diff = Math.round((startOfDay(date) - startOfDay(new Date())) / MS_PER_DAY);
+  const diff = daysBetween(new Date(), date);
   if (diff === 0) return "Today";
   if (diff === 1) return "Tomorrow";
   if (diff === -1) return "Yesterday";

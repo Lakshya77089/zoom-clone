@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Info, MoreHorizontal, SquareArrowOutUpRight } from "lucide-react";
+import { ChevronDown, Info, SquareArrowOutUpRight } from "lucide-react";
 import { MeetingCard } from "@/components/meetings/MeetingCard";
 import { formatGroupLabel } from "@/lib/format";
 import type { Meeting } from "@/types";
@@ -93,11 +93,12 @@ interface CalendarCardProps {
   children: ReactNode;
   testId?: string;
   notice?: boolean;
+  toolbar?: ReactNode;
 }
 
 const roundIcon = "flex h-6 w-6 items-center justify-center rounded-full text-ink-soft";
 
-export function CalendarCard({ title, headingId, viewAllHref, children, testId, notice = false }: CalendarCardProps) {
+export function CalendarCard({ title, headingId, viewAllHref, children, testId, notice = false, toolbar }: CalendarCardProps) {
   return (
     <section className="overflow-hidden rounded-lg border-[0.8px] border-line-soft bg-white" aria-labelledby={headingId} data-testid={testId}>
       {notice && (
@@ -119,21 +120,7 @@ export function CalendarCard({ title, headingId, viewAllHref, children, testId, 
           </Link>
         )}
       </div>
-      <div className={`flex h-11 items-center gap-2 border-b-[0.8px] border-line px-4 ${unavailableClass}`} aria-hidden>
-        <span className="flex h-6 items-center gap-1 rounded-full border-[0.8px] border-[#98a0a9] px-2 text-xs leading-4 text-ink">
-          <CalendarDays size={12} />
-          Today
-        </span>
-        <span className={roundIcon}>
-          <ChevronLeft size={14} />
-        </span>
-        <span className={roundIcon}>
-          <ChevronRight size={14} />
-        </span>
-        <span className={`${roundIcon} ml-auto`}>
-          <MoreHorizontal size={14} />
-        </span>
-      </div>
+      {toolbar ?? <div className="border-b-[0.8px] border-line" />}
       {children}
     </section>
   );

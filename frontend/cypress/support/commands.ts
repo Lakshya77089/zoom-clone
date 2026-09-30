@@ -17,3 +17,9 @@ Cypress.Commands.add("startInstantMeeting", () =>
   cy.request<{ meeting: MeetingResponse }>("POST", "/api/meetings/instant").its("body.meeting"),
 );
 
+Cypress.Commands.add("showUpcomingDay", (start: string) => {
+  const dayStart = (value: Date) => new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+  const days = Math.round((dayStart(new Date(start)) - dayStart(new Date())) / 86_400_000);
+  cy.getByTestId("calendar-today").click();
+  for (let step = 0; step < days; step++) cy.getByTestId("calendar-next").click();
+});
