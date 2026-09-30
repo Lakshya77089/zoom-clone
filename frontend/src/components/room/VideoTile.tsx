@@ -1,4 +1,4 @@
-import { Mic, MicOff } from "lucide-react";
+import { MicIcon, MicOffIcon } from "@/components/icons";
 import { StreamVideo } from "@/components/room/StreamVideo";
 import type { PeerStatus } from "@/lib/peerMesh";
 import type { Participant } from "@/types";
@@ -35,9 +35,9 @@ export function VideoTile({ participant, isSelf, stream, status = "connecting" }
       )}
       <div className="absolute bottom-1 left-1 flex max-w-[calc(100%-0.5rem)] items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 text-xs leading-4 text-white">
         {participant.is_muted ? (
-          <MicOff size={12} className="shrink-0 text-zoom-red" aria-label="Muted" />
+          <MicOffIcon size={12} className="shrink-0 text-zoom-red" aria-label="Muted" />
         ) : (
-          <Mic size={12} className="shrink-0" aria-hidden />
+          <MicIcon size={12} className="shrink-0" aria-hidden />
         )}
         <span className="truncate">{participant.display_name}</span>
       </div>

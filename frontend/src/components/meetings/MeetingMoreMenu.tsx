@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreHorizontal } from "lucide-react";
+import { MoreIcon } from "@/components/icons";
 import { Menu, type MenuItem } from "@/components/ui/Menu";
 
 interface MeetingMoreMenuProps {
@@ -25,7 +25,7 @@ export function MeetingMoreMenu({ title, items }: MeetingMoreMenuProps) {
             open ? "bg-line/70 text-ink" : ""
           }`}
         >
-          <MoreHorizontal size={16} />
+          <MoreIcon size={16} />
         </button>
       )}
     />

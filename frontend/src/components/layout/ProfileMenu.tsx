@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Settings, UserRound } from "lucide-react";
+import { PersonIcon, SettingsIcon } from "@/components/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { ROUTES } from "@/constants";
 import { useDismissible } from "@/hooks/useDismissible";
@@ -12,8 +12,8 @@ interface ProfileMenuProps {
 }
 
 const links = [
-  { label: "Profile", href: `${ROUTES.settings}#profile`, icon: UserRound },
-  { label: "Settings", href: ROUTES.settings, icon: Settings },
+  { label: "Profile", href: `${ROUTES.settings}#profile`, icon: PersonIcon },
+  { label: "Settings", href: ROUTES.settings, icon: SettingsIcon },
 ];
 
 export function ProfileMenu({ user }: ProfileMenuProps) {

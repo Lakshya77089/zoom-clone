@@ -17,7 +17,7 @@ function RailItem({ item, active, testId }: { item: NavItem; active: boolean; te
   const { label, href, icon: Icon } = item;
   const content = (
     <>
-      <Icon size={18} strokeWidth={1.75} />
+      <Icon size={18} />
       {label}
     </>
   );

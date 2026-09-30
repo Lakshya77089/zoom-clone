@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mic, MicOff, MoreHorizontal, Search, Video, VideoOff, X } from "lucide-react";
+import { CloseIcon, MicIcon, MicOffIcon, MoreIcon, SearchIcon, VideoIcon, VideoOffIcon } from "@/components/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import type { Participant } from "@/types";
@@ -53,12 +53,12 @@ export function ParticipantsPanel({
           aria-label="Close participants"
           className="absolute right-3 flex h-6 w-6 items-center justify-center rounded-full text-ink-soft hover:bg-canvas"
         >
-          <X size={16} />
+          <CloseIcon size={16} />
         </button>
       </div>
       <div className="px-3 pb-2">
         <label className="relative block">
-          <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" />
+          <SearchIcon size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" />
           <input
             type="search"
             value={query}
@@ -92,14 +92,14 @@ export function ParticipantsPanel({
                 </button>
               )}
               {participant.is_muted ? (
-                <MicOff size={16} className="text-zoom-red" aria-label="Muted" />
+                <MicOffIcon size={16} className="text-zoom-red" aria-label="Muted" />
               ) : (
-                <Mic size={16} className="text-ink-muted" aria-label="Unmuted" />
+                <MicIcon size={16} className="text-ink-muted" aria-label="Unmuted" />
               )}
               {participant.is_video_on ? (
-                <Video size={16} className="text-ink-muted" aria-label="Video on" />
+                <VideoIcon size={16} className="text-ink-muted" aria-label="Video on" />
               ) : (
-                <VideoOff size={16} className="text-zoom-red" aria-label="Video off" />
+                <VideoOffIcon size={16} className="text-zoom-red" aria-label="Video off" />
               )}
             </li>
           );
@@ -116,7 +116,7 @@ export function ParticipantsPanel({
           </button>
         )}
         <span aria-hidden className={`flex h-8 w-8 items-center justify-center rounded-xl bg-canvas text-ink ${unavailableClass}`}>
-          <MoreHorizontal size={16} />
+          <MoreIcon size={16} />
         </span>
       </div>
     </aside>

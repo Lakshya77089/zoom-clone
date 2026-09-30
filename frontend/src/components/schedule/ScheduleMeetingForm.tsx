@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@/components/icons";
 import { Button } from "@/components/ui/Button";
 import { FieldMessage, FormAlert, inputClasses } from "@/components/ui/field";
 import {
@@ -167,7 +167,7 @@ export function ScheduleMeetingForm({ defaultTitle, onCancel, onScheduled }: Sch
             data-testid="schedule-add-description"
             className="mt-4 flex items-center gap-1 pl-5 text-sm leading-[18px] text-zoom-blue hover:underline"
           >
-            <Plus size={14} />
+            <PlusIcon size={14} />
             Add Description
           </button>
         )}

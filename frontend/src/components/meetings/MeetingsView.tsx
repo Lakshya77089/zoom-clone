@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarPlus, Plus, RotateCw, Search } from "lucide-react";
 import { MeetingDialogs, type ActiveDialog } from "@/components/dashboard/MeetingDialogs";
+import { CalendarPlusIcon, PlusIcon, RefreshIcon, SearchIcon } from "@/components/icons";
 import { MeetingDetail } from "@/components/meetings/MeetingDetail";
 import { MeetingListItem } from "@/components/meetings/MeetingListItem";
 import { MeetingListSkeleton } from "@/components/meetings/MeetingLists";
@@ -127,7 +127,7 @@ export function MeetingsView() {
       <div className={`min-h-0 w-full shrink-0 flex-col border-r-2 border-[rgba(125,125,136,0.13)] md:flex md:w-[360px] ${showDetail ? "hidden" : "flex"}`}>
         <div className="flex h-[46px] shrink-0 items-center gap-1 px-3">
           <button type="button" onClick={() => void refresh()} aria-label="Refresh meetings" className={iconButton}>
-            <RotateCw size={14} strokeWidth={2.25} />
+            <RefreshIcon size={14} strokeWidth={1.4} />
           </button>
           <div role="tablist" aria-label="Meeting lists" className="flex flex-1 items-center justify-center gap-5">
             {TABS.map(({ id, label }) => {
@@ -150,13 +150,13 @@ export function MeetingsView() {
             })}
           </div>
           <button type="button" onClick={() => setDialog("schedule")} aria-label="Schedule a meeting" data-testid="meetings-schedule-button" className={iconButton}>
-            <Plus size={16} strokeWidth={2.25} />
+            <PlusIcon size={16} strokeWidth={1.4} />
           </button>
         </div>
 
         <div className="px-4 pb-1">
           <label className="relative block">
-            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#3d4349]" />
+            <SearchIcon size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#3d4349]" />
             <input
               type="search"
               value={query}
@@ -181,7 +181,7 @@ export function MeetingsView() {
 
         <div className="flex h-[35px] shrink-0 items-center justify-center border-t-[0.8px] border-line">
           <span aria-disabled="true" className={`flex items-center gap-1.5 text-sm leading-[14px] text-[#0e72ed] ${unavailableClass}`}>
-            <CalendarPlus size={14} />
+            <CalendarPlusIcon size={14} />
             Add a calendar
           </span>
         </div>

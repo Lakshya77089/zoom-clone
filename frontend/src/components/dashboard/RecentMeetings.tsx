@@ -1,6 +1,6 @@
 "use client";
 
-import { History } from "lucide-react";
+import { ClockIllustration } from "@/components/icons";
 import { CalendarCard, MeetingListSkeleton, RecentMeetingList } from "@/components/meetings/MeetingLists";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ROUTES } from "@/constants";
@@ -19,7 +19,7 @@ export function RecentMeetings({ meetings, loading, startingCode, onRejoin }: Re
       {loading ? (
         <MeetingListSkeleton rows={2} />
       ) : meetings.length === 0 ? (
-        <EmptyState icon={History} title="No recent meetings." testId="recent-empty" />
+        <EmptyState illustration={ClockIllustration} title="No recent meetings." testId="recent-empty" />
       ) : (
         <RecentMeetingList meetings={meetings} startingCode={startingCode} onStart={onRejoin} />
       )}

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarPlus, RotateCw, SquareArrowOutUpRight, Umbrella } from "lucide-react";
+import { CalendarPlusIcon, ExternalLinkIcon, RefreshIcon, UmbrellaIllustration } from "@/components/icons";
 import { DayNavigator } from "@/components/meetings/DayNavigator";
 import { CalendarCard, MeetingListSkeleton, UpcomingMeetingList } from "@/components/meetings/MeetingLists";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -51,9 +51,9 @@ export function UpcomingMeetings({ meetings, loading, startingCode, onStart, onD
     <DayNavigator
       cursor={cursor}
       menuItems={[
-        { label: "Refresh", icon: RotateCw, onSelect: onRefresh, testId: "calendar-refresh" },
-        { label: "Schedule a meeting", icon: CalendarPlus, onSelect: onSchedule, testId: "calendar-schedule" },
-        { label: "Open in Meetings", icon: SquareArrowOutUpRight, onSelect: () => router.push(ROUTES.meetings), testId: "calendar-open-meetings" },
+        { label: "Refresh", icon: RefreshIcon, onSelect: onRefresh, testId: "calendar-refresh" },
+        { label: "Schedule a meeting", icon: CalendarPlusIcon, onSelect: onSchedule, testId: "calendar-schedule" },
+        { label: "Open in Meetings", icon: ExternalLinkIcon, onSelect: () => router.push(ROUTES.meetings), testId: "calendar-open-meetings" },
       ]}
     />
   );
@@ -64,7 +64,7 @@ export function UpcomingMeetings({ meetings, loading, startingCode, onStart, onD
         <MeetingListSkeleton />
       ) : dayMeetings.length === 0 ? (
         <EmptyState
-          icon={Umbrella}
+          illustration={UmbrellaIllustration}
           title="No meetings scheduled."
           testId="upcoming-empty"
           action={

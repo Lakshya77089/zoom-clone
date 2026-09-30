@@ -2,7 +2,7 @@
 
 import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutGrid } from "lucide-react";
+import { GalleryIcon } from "@/components/icons";
 import { MeetingInfo } from "@/components/room/MeetingInfo";
 import { MeetingToolbar } from "@/components/room/MeetingToolbar";
 import { ParticipantsPanel } from "@/components/room/ParticipantsPanel";
@@ -100,7 +100,7 @@ export function LiveRoom({ code, state, setState, refresh, showInviteOnLoad }: L
           {meeting.title}
         </p>
         <span aria-hidden className={`flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-white/90 ${unavailableClass}`}>
-          <LayoutGrid size={14} />
+          <GalleryIcon size={14} />
           View
         </span>
       </header>

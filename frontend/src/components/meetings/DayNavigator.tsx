@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, MoreIcon } from "@/components/icons";
 import { Menu, type MenuItem } from "@/components/ui/Menu";
 import type { DayCursor } from "@/hooks/useDayCursor";
 import { formatShortDate } from "@/lib/format";
@@ -27,14 +27,14 @@ export function DayNavigator({ cursor, menuItems }: DayNavigatorProps) {
           isToday ? "border-[#98a0a9] text-ink" : "border-zoom-blue text-zoom-blue hover:bg-zoom-blue-light"
         }`}
       >
-        <CalendarDays size={12} />
+        <CalendarIcon size={12} />
         Today
       </button>
       <button type="button" onClick={goPrevious} disabled={isToday} aria-label="Previous day" data-testid="calendar-prev" className={roundButton}>
-        <ChevronLeft size={14} />
+        <ChevronLeftIcon size={14} />
       </button>
       <button type="button" onClick={goNext} aria-label="Next day" data-testid="calendar-next" className={roundButton}>
-        <ChevronRight size={14} />
+        <ChevronRightIcon size={14} />
       </button>
       <span className="truncate text-xs font-semibold leading-4 text-ink" aria-live="polite" data-testid="calendar-date" suppressHydrationWarning>
         {selected ? formatShortDate(selected) : ""}
@@ -54,7 +54,7 @@ export function DayNavigator({ cursor, menuItems }: DayNavigatorProps) {
               data-testid="calendar-more"
               className={`${roundButton} ${open ? "bg-canvas text-ink" : ""}`}
             >
-              <MoreHorizontal size={14} />
+              <MoreIcon size={14} />
             </button>
           )}
         />

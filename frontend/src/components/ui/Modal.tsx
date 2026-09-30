@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { X } from "lucide-react";
+import { CloseIcon } from "@/components/icons";
 
 interface ModalProps {
   title: string;
@@ -80,7 +80,7 @@ export function Modal({ title, onClose, children, footer, widthClass = "max-w-[4
               aria-label="Close"
               className="-mr-2 -mt-1 flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-canvas hover:text-ink"
             >
-              <X size={16} />
+              <CloseIcon size={16} />
             </button>
           )}
         </div>

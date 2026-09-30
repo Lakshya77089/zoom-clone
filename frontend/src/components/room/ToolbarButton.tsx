@@ -1,10 +1,10 @@
-import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { type IconComponent } from "@/components/icons";
 import { unavailableClass } from "@/components/ui/unavailable";
 
 interface ToolbarButtonProps {
   label: string;
-  icon?: LucideIcon;
+  icon?: IconComponent;
   glyph?: ReactNode;
   onClick?: () => void;
   active?: boolean;
@@ -33,7 +33,7 @@ export function ToolbarButton({ label, icon: Icon, glyph, onClick, active, badge
       className={`${toolbarItem} ${disabled ? unavailableClass : "hover:bg-white/10"} ${active ? "bg-white/10" : ""} ${className}`}
     >
       <span className="relative flex h-6 items-center">
-        {glyph ?? (Icon && <Icon size={22} strokeWidth={1.75} />)}
+        {glyph ?? (Icon && <Icon size={22} strokeWidth={1.3} />)}
         {badge !== undefined && <span className="absolute -right-3 -top-1 text-[11px] font-semibold leading-3">{badge}</span>}
       </span>
       <span className="whitespace-nowrap text-xs leading-4 text-white/90">{label}</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, ShieldCheck } from "lucide-react";
+import { CheckIcon, CopyIcon, EncryptionShieldIcon } from "@/components/icons";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useDismissible } from "@/hooks/useDismissible";
 import { formatMeetingCode } from "@/lib/meetingCode";
@@ -25,7 +25,7 @@ export function MeetingInfo({ meeting, defaultOpen = false }: MeetingInfoProps) 
         data-testid="meeting-info-button"
         className="flex h-7 w-7 items-center justify-center rounded-md text-white/90 outline-none hover:bg-room-hover focus-visible:ring-2 focus-visible:ring-white/60"
       >
-        <ShieldCheck size={18} fill="#1faa59" className="text-room" strokeWidth={1.75} />
+        <EncryptionShieldIcon size={18} />
       </button>
 
       {open && (
@@ -52,7 +52,7 @@ export function MeetingInfo({ meeting, defaultOpen = false }: MeetingInfoProps) 
             onClick={() => void copy(meeting.invite_link)}
             className="mt-4 flex h-8 items-center gap-1.5 rounded-xl bg-zoom-blue px-3.5 text-sm font-medium text-white hover:bg-zoom-blue-dark"
           >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
+            {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
             {copied ? "Copied" : "Copy link"}
           </button>
         </div>

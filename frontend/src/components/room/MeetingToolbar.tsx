@@ -1,4 +1,4 @@
-import { AppWindow, ArrowUp, Circle, MessageCircle, SmilePlus, Users } from "lucide-react";
+import { AppsIcon, ChatBubbleIcon, ParticipantsIcon, ReactIcon, RecordIcon, ShareScreenIcon } from "@/components/icons";
 import { LeaveMenu } from "@/components/room/LeaveMenu";
 import { MediaIconButton } from "@/components/room/MediaIconButton";
 import { MoreMenu } from "@/components/room/MoreMenu";
@@ -20,18 +20,6 @@ interface MeetingToolbarProps {
   onLeave: () => void;
   onEndForAll: () => void;
 }
-
-const shareGlyph = (
-  <span className="flex h-[22px] w-[22px] items-center justify-center rounded-md bg-[#1faa59]">
-    <ArrowUp size={15} strokeWidth={2.75} />
-  </span>
-);
-
-const recordGlyph = (
-  <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full border-[1.75px] border-white">
-    <Circle size={9} fill="currentColor" strokeWidth={0} />
-  </span>
-);
 
 export function MeetingToolbar({
   isMuted,
@@ -63,17 +51,17 @@ export function MeetingToolbar({
       <div className="flex min-w-0 flex-1 items-center justify-center gap-0.5">
         <ToolbarButton
           label="Participants"
-          icon={Users}
+          icon={ParticipantsIcon}
           badge={participantCount}
           active={participantsOpen}
           onClick={onToggleParticipants}
           testId="participants-button"
         />
-        <ToolbarButton label="Chat" icon={MessageCircle} disabled className="hidden md:flex" />
-        <ToolbarButton label="React" icon={SmilePlus} disabled className="hidden md:flex" />
-        <ToolbarButton label="Share" glyph={shareGlyph} disabled className="hidden md:flex" />
-        <ToolbarButton label="Record" glyph={recordGlyph} disabled className="hidden lg:flex" />
-        <ToolbarButton label="Apps" icon={AppWindow} disabled className="hidden lg:flex" />
+        <ToolbarButton label="Chat" icon={ChatBubbleIcon} disabled className="hidden md:flex" />
+        <ToolbarButton label="React" icon={ReactIcon} disabled className="hidden md:flex" />
+        <ToolbarButton label="Share" icon={ShareScreenIcon} disabled className="hidden md:flex" />
+        <ToolbarButton label="Record" icon={RecordIcon} disabled className="hidden lg:flex" />
+        <ToolbarButton label="Apps" icon={AppsIcon} disabled className="hidden lg:flex" />
         <MoreMenu
           isHost={isHost}
           onCopyLink={onCopyLink}

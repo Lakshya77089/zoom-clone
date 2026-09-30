@@ -1,4 +1,4 @@
-import { House, MessagesSquare, Settings, SquareUserRound, Video, type LucideIcon } from "lucide-react";
+import { ChatIcon, ContactsIcon, HomeIcon, SettingsIcon, VideoIcon, type IconComponent } from "@/components/icons";
 
 export const ROUTES = {
   home: "/",
@@ -12,17 +12,17 @@ export const ROUTES = {
 export interface NavItem {
   label: string;
   href?: string;
-  icon: LucideIcon;
+  icon: IconComponent;
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Home", href: ROUTES.home, icon: House },
-  { label: "Chat", icon: MessagesSquare },
-  { label: "Meetings", href: ROUTES.meetings, icon: Video },
-  { label: "Contacts", icon: SquareUserRound },
+  { label: "Home", href: ROUTES.home, icon: HomeIcon },
+  { label: "Chat", icon: ChatIcon },
+  { label: "Meetings", href: ROUTES.meetings, icon: VideoIcon },
+  { label: "Contacts", icon: ContactsIcon },
 ];
 
-export const SETTINGS_NAV_ITEM: NavItem = { label: "Settings", href: ROUTES.settings, icon: Settings };
+export const SETTINGS_NAV_ITEM: NavItem = { label: "Settings", href: ROUTES.settings, icon: SettingsIcon };
 
 export const TOAST_DURATION_MS = 3000;
 export const ROOM_POLL_INTERVAL_MS = 2000;

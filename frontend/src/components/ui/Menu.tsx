@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, type KeyboardEvent, type ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
+import { type IconComponent } from "@/components/icons";
 import { useDismissible } from "@/hooks/useDismissible";
 
 export interface MenuItem {
   label: string;
-  icon?: LucideIcon;
+  icon?: IconComponent;
   onSelect: () => void;
   danger?: boolean;
   testId?: string;

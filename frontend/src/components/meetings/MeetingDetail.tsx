@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ChevronLeft, Copy, Pencil, Trash2 } from "lucide-react";
+import { ChevronLeftIcon, CopyIcon, EditIcon, TrashIcon } from "@/components/icons";
 import { Spinner } from "@/components/ui/Spinner";
 import { useCopyWithToast } from "@/hooks/useCopyWithToast";
 import { buildInvitation, formatDayLabel, formatDuration, formatTime, formatTimeRange } from "@/lib/format";
@@ -47,7 +47,7 @@ export function MeetingDetail({ meeting, variant, starting, onStart, onDelete, o
   return (
     <div className="px-5 pb-10 pt-6 md:px-[42px] md:pt-12" data-testid="meeting-detail">
       <button type="button" onClick={onBack} className="mb-4 flex items-center gap-0.5 text-sm text-zoom-blue md:hidden">
-        <ChevronLeft size={16} />
+        <ChevronLeftIcon size={16} />
         Back
       </button>
       <h2 className="break-words text-2xl font-bold leading-[29px] text-[#39394d]">{meeting.title}</h2>
@@ -70,18 +70,18 @@ export function MeetingDetail({ meeting, variant, starting, onStart, onDelete, o
           <span className="inline-flex h-8 items-center text-sm text-ink-muted">Ended</span>
         )}
         <button type="button" className={outline} onClick={() => void copy(buildInvitation(meeting), "Invitation copied to clipboard")}>
-          <Copy size={14} strokeWidth={2.25} />
+          <CopyIcon size={14} strokeWidth={1.5} />
           Copy Invitation
         </button>
         {variant === "upcoming" && (
           <span aria-disabled="true" className={`${outline} ${unavailableClass}`}>
-            <Pencil size={13} strokeWidth={2.25} />
+            <EditIcon size={14} strokeWidth={1.5} />
             Edit
           </span>
         )}
         {variant === "upcoming" && !isLive && (
           <button type="button" className={outline} onClick={() => onDelete(meeting)} data-testid="detail-delete-button">
-            <Trash2 size={14} strokeWidth={2.25} />
+            <TrashIcon size={14} strokeWidth={1.5} />
             Delete
           </button>
         )}

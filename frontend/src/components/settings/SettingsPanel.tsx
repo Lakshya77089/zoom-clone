@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { Headphones, MessageCircle, Settings, UserRound, Video, X, type LucideIcon } from "lucide-react";
+import { AccountSolidIcon, AudioSolidIcon, ChatSolidIcon, CloseIcon, GeneralSolidIcon, VideoSolidIcon, type IconComponent } from "@/components/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { Switch } from "@/components/ui/Switch";
 import { ROUTES } from "@/constants";
@@ -14,16 +14,16 @@ type SectionId = "general" | "audio" | "video" | "profile";
 interface NavEntry {
   id: SectionId | null;
   label: string;
-  icon: LucideIcon;
+  icon: IconComponent;
   tint: string;
 }
 
 const NAV: NavEntry[] = [
-  { id: "general", label: "General", icon: Settings, tint: "bg-[#0e71eb]" },
-  { id: "audio", label: "Audio", icon: Headphones, tint: "bg-[#23b25e]" },
-  { id: "video", label: "Video", icon: Video, tint: "bg-[#23b25e]" },
-  { id: null, label: "Chat", icon: MessageCircle, tint: "bg-[#23b25e]" },
-  { id: "profile", label: "My account", icon: UserRound, tint: "bg-[#4f6cf5]" },
+  { id: "general", label: "General", icon: GeneralSolidIcon, tint: "bg-[#0e71eb]" },
+  { id: "audio", label: "Audio", icon: AudioSolidIcon, tint: "bg-[#23b25e]" },
+  { id: "video", label: "Video", icon: VideoSolidIcon, tint: "bg-[#23b25e]" },
+  { id: null, label: "Chat", icon: ChatSolidIcon, tint: "bg-[#23b25e]" },
+  { id: "profile", label: "My account", icon: AccountSolidIcon, tint: "bg-[#4f6cf5]" },
 ];
 
 function Section({ id, title, children, testId }: { id: SectionId; title: string; children: ReactNode; testId?: string }) {
@@ -75,7 +75,7 @@ export function SettingsPanel() {
       <div className="flex h-[46px] shrink-0 items-center justify-between border-b-[0.8px] border-line-soft px-4">
         <h1 className="text-xl font-normal leading-5 text-black">Settings</h1>
         <Link href={ROUTES.home} aria-label="Close settings" className="flex h-6 w-6 items-center justify-center rounded text-[#222230] hover:bg-canvas">
-          <X size={16} />
+          <CloseIcon size={16} />
         </Link>
       </div>
 
@@ -96,7 +96,7 @@ export function SettingsPanel() {
                     }`}
                   >
                     <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md ${selected ? "bg-white/20" : tint}`}>
-                      <Icon size={12} strokeWidth={2.5} className="text-white" />
+                      <Icon size={13} className="text-white" />
                     </span>
                     {label}
                   </button>

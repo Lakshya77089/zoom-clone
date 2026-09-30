@@ -1,6 +1,6 @@
 "use client";
 
-import { Hash, Link2, Mail, Trash2, Users, Video } from "lucide-react";
+import { LinkIcon, MailIcon, MeetingIdIcon, ParticipantsIcon, TrashIcon, VideoIcon } from "@/components/icons";
 import { MeetingMoreMenu } from "@/components/meetings/MeetingMoreMenu";
 import { Button } from "@/components/ui/Button";
 import type { MenuItem } from "@/components/ui/Menu";
@@ -42,13 +42,13 @@ export function MeetingCard({ meeting, variant, starting, onStart, onDelete }: M
   const menuItems: MenuItem[] = [
     ...(isUpcoming || isLive
       ? [
-          { label: "Copy invitation", icon: Mail, onSelect: () => void copy(buildInvitation(meeting), "Invitation copied to clipboard") },
-          { label: "Copy invite link", icon: Link2, onSelect: () => void copy(meeting.invite_link, "Invite link copied"), testId: "copy-invite-link" },
+          { label: "Copy invitation", icon: MailIcon, onSelect: () => void copy(buildInvitation(meeting), "Invitation copied to clipboard") },
+          { label: "Copy invite link", icon: LinkIcon, onSelect: () => void copy(meeting.invite_link, "Invite link copied"), testId: "copy-invite-link" },
         ]
       : []),
-    { label: "Copy meeting ID", icon: Hash, onSelect: () => void copy(meeting.meeting_code, "Meeting ID copied") },
+    { label: "Copy meeting ID", icon: MeetingIdIcon, onSelect: () => void copy(meeting.meeting_code, "Meeting ID copied") },
     ...(isUpcoming && !isLive && onDelete
-      ? [{ label: "Delete", icon: Trash2, danger: true, onSelect: () => onDelete(meeting), testId: "delete-meeting" }]
+      ? [{ label: "Delete", icon: TrashIcon, danger: true, onSelect: () => onDelete(meeting), testId: "delete-meeting" }]
       : []),
   ];
 
@@ -63,7 +63,7 @@ export function MeetingCard({ meeting, variant, starting, onStart, onDelete }: M
     >
       {!isUpcoming && (
         <span className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-zoom-blue-light text-zoom-blue sm:flex">
-          <Video size={16} />
+          <VideoIcon size={16} />
         </span>
       )}
 
@@ -92,7 +92,7 @@ export function MeetingCard({ meeting, variant, starting, onStart, onDelete }: M
           {!isUpcoming && (
             <span className="inline-flex items-center gap-1 whitespace-nowrap">
               <span aria-hidden>·</span>
-              <Users size={13} aria-label="Participants" />
+              <ParticipantsIcon size={13} aria-label="Participants" />
               {meeting.participant_count}
             </span>
           )}

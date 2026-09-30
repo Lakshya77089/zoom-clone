@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { SearchIcon } from "@/components/icons";
 import { ROUTES } from "@/constants";
 
 export function SearchBox() {
@@ -33,7 +33,7 @@ export function SearchBox() {
 
   return (
     <form role="search" onSubmit={handleSubmit} className="relative">
-      <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#3d4349]" />
+      <SearchIcon size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#3d4349]" />
       <input
         ref={inputRef}
         type="search"

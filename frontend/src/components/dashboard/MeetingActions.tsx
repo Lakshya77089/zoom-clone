@@ -1,6 +1,5 @@
-import { ChevronDown } from "lucide-react";
 import { ActionTile } from "@/components/dashboard/ActionTile";
-import { JoinIcon, NewMeetingIcon, ScheduleIcon } from "@/components/dashboard/TileIcons";
+import { ChevronDownIcon, JoinTileIcon, NewMeetingTileIcon, ScheduleTileIcon } from "@/components/icons";
 
 interface MeetingActionsProps {
   creating: boolean;
@@ -14,15 +13,15 @@ export function MeetingActions({ creating, onNewMeeting, onJoin, onSchedule }: M
     <div className="flex justify-center gap-[clamp(28px,9vw,60px)]" role="group" aria-label="Meeting actions">
       <ActionTile
         label="New meeting"
-        icon={NewMeetingIcon}
+        icon={NewMeetingTileIcon}
         tone="orange"
         onClick={onNewMeeting}
         busy={creating}
         testId="new-meeting-button"
-        trailing={<ChevronDown size={13} className="text-ink-faint" aria-hidden />}
+        trailing={<ChevronDownIcon size={13} className="text-ink-faint" aria-hidden />}
       />
-      <ActionTile label="Join" icon={JoinIcon} tone="blue" onClick={onJoin} testId="join-meeting-button" />
-      <ActionTile label="Schedule" icon={ScheduleIcon} tone="blue" onClick={onSchedule} testId="schedule-meeting-button" />
+      <ActionTile label="Join" icon={JoinTileIcon} tone="blue" onClick={onJoin} testId="join-meeting-button" />
+      <ActionTile label="Schedule" icon={ScheduleTileIcon} tone="blue" onClick={onSchedule} testId="schedule-meeting-button" />
     </div>
   );
 }

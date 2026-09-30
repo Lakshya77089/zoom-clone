@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ChevronDown, Info, SquareArrowOutUpRight } from "lucide-react";
+import { ChevronDownIcon, ExternalLinkIcon, InfoIcon } from "@/components/icons";
 import { MeetingCard } from "@/components/meetings/MeetingCard";
 import { formatGroupLabel } from "@/lib/format";
 import type { Meeting } from "@/types";
@@ -103,7 +103,7 @@ export function CalendarCard({ title, headingId, viewAllHref, children, testId, 
     <section className="overflow-hidden rounded-lg border-[0.8px] border-line-soft bg-white" aria-labelledby={headingId} data-testid={testId}>
       {notice && (
         <div className="m-2 flex items-start gap-3 rounded-xl border-[0.8px] border-[#a8ccf8] bg-[#f2f8ff] p-4 text-sm leading-[18px] text-ink">
-          <Info size={20} strokeWidth={1.75} className="shrink-0 text-[#3b90f7]" />
+          <InfoIcon size={20} className="shrink-0 text-[#3b90f7]" />
           <p>
             You haven&apos;t connected your calendar yet. <span className={`text-zoom-blue ${unavailableClass}`}>Connect now</span> to manage all your meetings and events in one place.
           </p>
@@ -112,11 +112,11 @@ export function CalendarCard({ title, headingId, viewAllHref, children, testId, 
       <div className="relative flex h-11 items-center justify-center px-10">
         <h2 id={headingId} className={`flex items-center gap-1 text-sm font-bold leading-[18px] text-ink ${unavailableClass}`}>
           {title}
-          <ChevronDown size={14} strokeWidth={2.5} aria-hidden />
+          <ChevronDownIcon size={14} strokeWidth={1.8} />
         </h2>
         {viewAllHref && (
           <Link href={viewAllHref} aria-label={`Open ${title.toLowerCase()}`} className={`${roundIcon} absolute right-4 hover:bg-canvas`}>
-            <SquareArrowOutUpRight size={14} />
+            <ExternalLinkIcon size={14} />
           </Link>
         )}
       </div>

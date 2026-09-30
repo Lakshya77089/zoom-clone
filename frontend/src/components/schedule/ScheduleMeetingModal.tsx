@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { MailIcon } from "@/components/icons";
 import { ScheduleMeetingForm } from "@/components/schedule/ScheduleMeetingForm";
 import { ScheduledMeetingSummary } from "@/components/schedule/ScheduledMeetingSummary";
 import { Button } from "@/components/ui/Button";
@@ -31,7 +31,7 @@ export function ScheduleMeetingModal({ defaultTitle, onClose, onScheduled }: Sch
         footer={
           <>
             <Button variant="secondary" onClick={() => void copy(buildInvitation(scheduled), "Invitation copied to clipboard")}>
-              <Mail size={16} />
+              <MailIcon size={16} />
               Copy invitation
             </Button>
             <Button onClick={onClose} data-testid="schedule-done" autoFocus>

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertIcon, SuccessIcon } from "@/components/icons";
 import { TOAST_DURATION_MS } from "@/constants";
 
 type ToastTone = "success" | "error";
@@ -35,7 +35,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  const Icon = toast?.tone === "error" ? AlertCircle : CheckCircle2;
+  const Icon = toast?.tone === "error" ? AlertIcon : SuccessIcon;
 
   return (
     <ToastContext.Provider value={show}>

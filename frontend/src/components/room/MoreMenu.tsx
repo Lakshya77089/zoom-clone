@@ -1,6 +1,6 @@
 "use client";
 
-import { Hash, Link2, Mail, MicOff, MoreHorizontal } from "lucide-react";
+import { LinkIcon, MailIcon, MeetingIdIcon, MicOffIcon, MoreIcon } from "@/components/icons";
 import { ToolbarButton } from "@/components/room/ToolbarButton";
 import { Menu, type MenuItem } from "@/components/ui/Menu";
 
@@ -14,10 +14,10 @@ interface MoreMenuProps {
 
 export function MoreMenu({ isHost, onCopyLink, onCopyInvitation, onCopyMeetingId, onMuteAll }: MoreMenuProps) {
   const items: MenuItem[] = [
-    { label: "Copy invite link", icon: Link2, onSelect: onCopyLink, testId: "more-copy-link" },
-    { label: "Copy invitation", icon: Mail, onSelect: onCopyInvitation },
-    { label: "Copy meeting ID", icon: Hash, onSelect: onCopyMeetingId },
-    ...(isHost ? [{ label: "Mute all", icon: MicOff, onSelect: onMuteAll, testId: "more-mute-all" }] : []),
+    { label: "Copy invite link", icon: LinkIcon, onSelect: onCopyLink, testId: "more-copy-link" },
+    { label: "Copy invitation", icon: MailIcon, onSelect: onCopyInvitation },
+    { label: "Copy meeting ID", icon: MeetingIdIcon, onSelect: onCopyMeetingId },
+    ...(isHost ? [{ label: "Mute all", icon: MicOffIcon, onSelect: onMuteAll, testId: "more-mute-all" }] : []),
   ];
 
   return (
@@ -28,7 +28,7 @@ export function MoreMenu({ isHost, onCopyLink, onCopyInvitation, onCopyMeetingId
       placement="top"
       align="center"
       renderTrigger={({ open, toggle }) => (
-        <ToolbarButton label="More" icon={MoreHorizontal} onClick={toggle} active={open} expanded={open} testId="more-button" />
+        <ToolbarButton label="More" icon={MoreIcon} onClick={toggle} active={open} expanded={open} testId="more-button" />
       )}
     />
   );

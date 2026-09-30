@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheck, Check, Copy, Link2 } from "lucide-react";
+import { CalendarCheckIcon, CheckIcon, CopyIcon, LinkIcon } from "@/components/icons";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { formatDuration, formatGroupLabel, formatTimeRange } from "@/lib/format";
 import { formatMeetingCode } from "@/lib/meetingCode";
@@ -27,7 +27,7 @@ export function ScheduledMeetingSummary({ meeting }: ScheduledMeetingSummaryProp
   return (
     <div data-testid="scheduled-summary">
       <div className="mb-5 flex items-center gap-3 rounded-xl bg-zoom-green/10 px-4 py-3 text-sm font-medium text-zoom-green-dark">
-        <CalendarCheck size={20} className="shrink-0" />
+        <CalendarCheckIcon size={20} className="shrink-0" />
         Your meeting has been scheduled and added to Upcoming.
       </div>
       <dl className="grid grid-cols-[96px_1fr] gap-x-4 gap-y-3 text-sm">
@@ -48,7 +48,7 @@ export function ScheduledMeetingSummary({ meeting }: ScheduledMeetingSummaryProp
         <dt className="text-ink-muted">Invite link</dt>
         <dd className="min-w-0">
           <div className="flex items-center gap-2 rounded-xl border border-line-strong py-1.5 pl-3 pr-1.5">
-            <Link2 size={16} className="shrink-0 text-ink-muted" />
+            <LinkIcon size={16} className="shrink-0 text-ink-muted" />
             <span className="min-w-0 flex-1 truncate text-zoom-blue" data-testid="scheduled-invite-link" title={meeting.invite_link}>
               {meeting.invite_link}
             </span>
@@ -58,7 +58,7 @@ export function ScheduledMeetingSummary({ meeting }: ScheduledMeetingSummaryProp
               aria-label="Copy invite link"
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-hover hover:text-ink"
             >
-              {copied ? <Check size={16} className="text-zoom-green-dark" /> : <Copy size={16} />}
+              {copied ? <CheckIcon size={16} className="text-zoom-green-dark" /> : <CopyIcon size={16} />}
             </button>
           </div>
         </dd>

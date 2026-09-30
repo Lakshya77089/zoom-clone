@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { SpinnerIcon } from "@/components/icons";
 
 interface SpinnerProps {
   size?: number;
@@ -6,5 +6,5 @@ interface SpinnerProps {
 }
 
 export function Spinner({ size = 20, className = "" }: SpinnerProps) {
-  return <Loader2 size={size} className={`animate-spin ${className}`} aria-hidden />;
+  return <SpinnerIcon size={size} strokeWidth={1.6} className={`animate-spin ${className}`} />;
 }

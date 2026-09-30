@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, ChevronDown, ChevronLeft, ChevronRight, Clock3, Search } from "lucide-react";
+import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, HistoryIcon, SearchIcon } from "@/components/icons";
 import { ProfileMenu } from "@/components/layout/ProfileMenu";
 import { SearchBox } from "@/components/layout/SearchBox";
 import { ZoomLogo } from "@/components/ui/ZoomLogo";
@@ -25,7 +25,7 @@ export function AppHeader() {
 
         <span aria-hidden className={`${lookAlike} ml-9 gap-1 px-2`}>
           Discover Products
-          <ChevronDown size={14} strokeWidth={2.5} />
+          <ChevronDownIcon size={13} strokeWidth={1.9} />
         </span>
         <span aria-hidden className={`${lookAlike} ml-2 px-2`}>
           Pricing
@@ -34,13 +34,13 @@ export function AppHeader() {
         <div className="hidden min-w-0 flex-1 items-center justify-center gap-1.5 md:flex xl:ml-5 xl:flex-none">
           <div className={`hidden items-center lg:flex ${unavailableClass}`} aria-hidden>
             <span className={`${historyButton} text-ink-disabled`}>
-              <ChevronLeft size={16} />
+              <ChevronLeftIcon size={14} />
             </span>
             <span className={`${historyButton} text-ink-disabled`}>
-              <ChevronRight size={16} />
+              <ChevronRightIcon size={14} />
             </span>
             <span className={`${historyButton} text-[#2a2b2d]`}>
-              <Clock3 size={14} />
+              <HistoryIcon size={14} />
             </span>
           </div>
           <div className="w-full max-w-[411px] xl:w-[411px]">
@@ -60,10 +60,10 @@ export function AppHeader() {
 
         <div className="ml-auto flex shrink-0 items-center gap-3 md:ml-0">
           <Link href={ROUTES.meetings} aria-label="Search meetings" className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft hover:bg-canvas md:hidden">
-            <Search size={16} />
+            <SearchIcon size={16} />
           </Link>
           <span aria-hidden title="Activity Center" className={`flex h-8 w-8 items-center justify-center rounded-full text-ink-soft ${unavailableClass}`}>
-            <Bell size={16} />
+            <BellIcon size={16} />
           </span>
           <ProfileMenu user={user} />
         </div>

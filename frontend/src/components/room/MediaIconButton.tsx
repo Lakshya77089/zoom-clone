@@ -1,4 +1,4 @@
-import { ChevronUp, Mic, MicOff, Video, VideoOff } from "lucide-react";
+import { ChevronUpIcon, MicIcon, MicOffIcon, VideoIcon, VideoOffIcon } from "@/components/icons";
 
 interface MediaIconButtonProps {
   kind: "audio" | "video";
@@ -13,7 +13,7 @@ const labels = {
 };
 
 export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }: MediaIconButtonProps) {
-  const Icon = kind === "audio" ? (enabled ? Mic : MicOff) : enabled ? Video : VideoOff;
+  const Icon = kind === "audio" ? (enabled ? MicIcon : MicOffIcon) : enabled ? VideoIcon : VideoOffIcon;
   const label = enabled ? labels[kind].on : labels[kind].off;
   const testId = kind === "audio" ? "toggle-audio" : "toggle-video";
 
@@ -47,12 +47,12 @@ export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }
         className="flex h-14 min-w-[56px] flex-col items-center justify-center gap-1 rounded-l-lg px-2 text-white outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/60 sm:min-w-[64px]"
       >
         <span className="flex h-6 items-center">
-          <Icon size={22} strokeWidth={1.75} className={enabled ? "" : "text-zoom-red"} />
+          <Icon size={22} strokeWidth={1.3} />
         </span>
         <span className="whitespace-nowrap text-xs leading-4 text-white/90">{kind === "audio" ? "Audio" : "Video"}</span>
       </button>
       <span aria-hidden className="hidden h-14 items-start rounded-r-lg pr-1 pt-2 text-white/80 sm:flex">
-        <ChevronUp size={12} strokeWidth={2.5} />
+        <ChevronUpIcon size={12} strokeWidth={1.8} />
       </span>
     </div>
   );

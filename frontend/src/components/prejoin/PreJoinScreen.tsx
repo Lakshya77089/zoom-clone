@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeftIcon } from "@/components/icons";
 import { MinimalHeader } from "@/components/layout/MinimalHeader";
 import { MediaIconButton } from "@/components/room/MediaIconButton";
 import { StreamVideo } from "@/components/room/StreamVideo";
@@ -27,7 +27,7 @@ function InvalidMeeting({ message, code }: { message: string; code: string }) {
   return (
     <main className="relative flex flex-1 flex-col items-center px-6 pt-24 text-center" data-testid="prejoin-error">
       <Link href={ROUTES.join} className="absolute left-4 top-6 flex items-center gap-0.5 text-sm text-zoom-blue hover:underline sm:left-8">
-        <ChevronLeft size={18} />
+        <ChevronLeftIcon size={18} />
         Back
       </Link>
       <h1 className="text-xl font-semibold">{message}</h1>
