@@ -140,6 +140,7 @@ Open http://localhost:3000.
 | `TURN_URLS` | backend, comma separated TURN urls, e.g. `turn:host:3478,turns:host:443?transport=tcp` | empty |
 | `TURN_USERNAME` / `TURN_CREDENTIAL` | backend, credentials for `TURN_URLS` | empty |
 | `CLOUDFLARE_TURN_KEY_ID` / `CLOUDFLARE_TURN_API_TOKEN` | backend, generates short-lived Cloudflare TURN credentials | empty |
+| `METERED_KEY_ID` / `METERED_SIGNING_SECRET` | backend, Metered secret key pair (`sk_id_…` / `sk_secret_…`); the backend signs a short-lived token locally and reads Metered's TURN servers from the welcome message | empty |
 | `ICE_TRANSPORT_POLICY` | backend, `all` or `relay` (force every call through TURN) | `all` |
 | `BACKEND_URL` | frontend, build time (target of the `/api` proxy) | `http://localhost:8000` |
 | `NEXT_PUBLIC_API_URL` | frontend, optional (call the API directly instead of through the proxy) | empty |

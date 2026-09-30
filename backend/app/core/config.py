@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     cloudflare_turn_key_id: str = ""
     cloudflare_turn_api_token: str = ""
     ice_transport_policy: Literal["all", "relay"] = "all"
+    metered_key_id: str = ""
+    metered_signing_secret: str = ""
+    metered_ws_url: str = "wss://rms.metered.ca/v1"
 
     @property
     def cors_origin_list(self) -> list[str]:
