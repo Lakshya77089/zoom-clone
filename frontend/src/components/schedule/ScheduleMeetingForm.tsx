@@ -30,7 +30,7 @@ interface FieldErrors {
 
 const START_GRACE_MS = 60_000;
 const DEFAULT_DURATION_HOURS = 1;
-const lookAlike = "flex items-center gap-2 text-sm leading-[18px] text-ink-disabled";
+const lookAlike = "flex cursor-not-allowed select-none items-center gap-2 text-sm leading-[18px] text-ink-disabled";
 
 function nextHalfHour(): Date {
   const date = new Date();
@@ -74,7 +74,7 @@ function Row({ label, required, htmlFor, children }: { label: string; required?:
 function LookAlikeBox({ label, checked = false }: { label: string; checked?: boolean }) {
   return (
     <span className={lookAlike}>
-      <input type="checkbox" disabled checked={checked} readOnly className="h-4 w-4 accent-zoom-blue" />
+      <input type="checkbox" disabled checked={checked} readOnly className="h-4 w-4 cursor-not-allowed accent-zoom-blue" />
       {label}
     </span>
   );
@@ -83,7 +83,7 @@ function LookAlikeBox({ label, checked = false }: { label: string; checked?: boo
 function LookAlikeRadio({ label, name, checked = false }: { label: string; name: string; checked?: boolean }) {
   return (
     <span className={lookAlike}>
-      <input type="radio" disabled checked={checked} readOnly name={name} className="h-4 w-4 accent-zoom-blue" />
+      <input type="radio" disabled checked={checked} readOnly name={name} className="h-4 w-4 cursor-not-allowed accent-zoom-blue" />
       {label}
     </span>
   );
@@ -247,7 +247,7 @@ export function ScheduleMeetingForm({ defaultTitle, onCancel, onScheduled }: Sch
       </Row>
 
       <Row label="Time Zone">
-        <select disabled aria-label="Time zone" className={`${inputClasses(false, true)} w-full max-w-[490px]`}>
+        <select disabled aria-label="Time zone" className={`${inputClasses(false, true)} w-full max-w-[490px] cursor-not-allowed`}>
           <option>{timeZone}</option>
         </select>
         <div className="mt-4">

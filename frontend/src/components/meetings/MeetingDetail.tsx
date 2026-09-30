@@ -7,6 +7,7 @@ import { useCopyWithToast } from "@/hooks/useCopyWithToast";
 import { buildInvitation, formatDayLabel, formatDuration, formatTime, formatTimeRange } from "@/lib/format";
 import { formatMeetingCode } from "@/lib/meetingCode";
 import type { Meeting } from "@/types";
+import { unavailableClass } from "@/components/ui/unavailable";
 
 interface MeetingDetailProps {
   meeting: Meeting;
@@ -73,7 +74,7 @@ export function MeetingDetail({ meeting, variant, starting, onStart, onDelete, o
           Copy Invitation
         </button>
         {variant === "upcoming" && (
-          <span aria-disabled="true" className={`${outline} cursor-default`}>
+          <span aria-disabled="true" className={`${outline} ${unavailableClass}`}>
             <Pencil size={13} strokeWidth={2.25} />
             Edit
           </span>

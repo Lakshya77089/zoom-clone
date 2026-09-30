@@ -14,6 +14,7 @@ import { useMeetingDeletion } from "@/hooks/useMeetingDeletion";
 import { useMeetingLauncher } from "@/hooks/useMeetingLauncher";
 import { formatGroupLabel } from "@/lib/format";
 import type { Meeting } from "@/types";
+import { unavailableClass } from "@/components/ui/unavailable";
 
 type Tab = "upcoming" | "previous";
 
@@ -179,7 +180,7 @@ export function MeetingsView() {
         </div>
 
         <div className="flex h-[35px] shrink-0 items-center justify-center border-t-[0.8px] border-line">
-          <span aria-disabled="true" className="flex items-center gap-1.5 text-sm leading-[14px] text-[#0e72ed]">
+          <span aria-disabled="true" className={`flex items-center gap-1.5 text-sm leading-[14px] text-[#0e72ed] ${unavailableClass}`}>
             <CalendarPlus size={14} />
             Add a calendar
           </span>

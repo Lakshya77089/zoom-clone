@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS, SETTINGS_NAV_ITEM, type NavItem } from "@/constants";
+import { unavailableClass } from "@/components/ui/unavailable";
 
 function isActive(pathname: string, href?: string): boolean {
   if (!href) return false;
@@ -23,7 +24,7 @@ function RailItem({ item, active, testId }: { item: NavItem; active: boolean; te
 
   if (!href) {
     return (
-      <span aria-disabled="true" title={`${label} is not available in this demo`} className={`${itemClass} cursor-default text-ink-soft`}>
+      <span aria-disabled="true" title={`${label} is not available in this demo`} className={`${itemClass} text-ink-soft ${unavailableClass}`}>
         {content}
       </span>
     );

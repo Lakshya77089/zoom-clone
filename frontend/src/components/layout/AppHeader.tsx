@@ -7,9 +7,10 @@ import { SearchBox } from "@/components/layout/SearchBox";
 import { ZoomLogo } from "@/components/ui/ZoomLogo";
 import { ROUTES } from "@/constants";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { unavailableClass } from "@/components/ui/unavailable";
 
 const historyButton = "flex h-6 w-6 items-center justify-center rounded-md";
-const lookAlike = "hidden shrink-0 cursor-default items-center whitespace-nowrap text-sm leading-5 text-ink-soft xl:flex";
+const lookAlike = `hidden shrink-0 items-center whitespace-nowrap text-sm leading-5 text-ink-soft xl:flex ${unavailableClass}`;
 
 export function AppHeader() {
   const user = useCurrentUser();
@@ -31,7 +32,7 @@ export function AppHeader() {
         </span>
 
         <div className="hidden min-w-0 flex-1 items-center justify-center gap-1.5 md:flex xl:ml-5 xl:flex-none">
-          <div className="hidden items-center lg:flex" aria-hidden>
+          <div className={`hidden items-center lg:flex ${unavailableClass}`} aria-hidden>
             <span className={`${historyButton} text-ink-disabled`}>
               <ChevronLeft size={16} />
             </span>
@@ -61,7 +62,7 @@ export function AppHeader() {
           <Link href={ROUTES.meetings} aria-label="Search meetings" className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft hover:bg-canvas md:hidden">
             <Search size={16} />
           </Link>
-          <span aria-hidden title="Activity Center" className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft">
+          <span aria-hidden title="Activity Center" className={`flex h-8 w-8 items-center justify-center rounded-full text-ink-soft ${unavailableClass}`}>
             <Bell size={16} />
           </span>
           <ProfileMenu user={user} />

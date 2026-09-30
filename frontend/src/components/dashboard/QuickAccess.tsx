@@ -1,4 +1,5 @@
 import { CircleDot, FileText, PenLine, type LucideIcon } from "lucide-react";
+import { unavailableClass } from "@/components/ui/unavailable";
 
 interface QuickItem {
   label: string;
@@ -21,7 +22,7 @@ export function QuickAccess() {
           key={label}
           aria-disabled="true"
           title={`${label} is not available in this demo`}
-          className="flex h-14 items-center gap-3 rounded-2xl border-[0.8px] border-line bg-white px-4"
+          className={`flex h-14 items-center gap-3 rounded-2xl border-[0.8px] border-line bg-white px-4 ${unavailableClass}`}
         >
           <span className={`flex h-8 w-8 items-center justify-center rounded-[10px] ${chip}`}>
             <Icon size={16} className={tint} strokeWidth={2} />
