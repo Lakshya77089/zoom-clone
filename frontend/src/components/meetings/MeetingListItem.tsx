@@ -30,7 +30,7 @@ export function MeetingListItem({ meeting, variant, selected, onSelect }: Meetin
         onClick={() => onSelect(meeting)}
         aria-current={selected || undefined}
         className={`w-full rounded-xl px-4 py-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zoom-blue ${
-          selected ? "bg-zoom-tile text-white" : "text-ink hover:bg-canvas"
+          selected ? "bg-zoom-tile text-white" : "text-ink hover:bg-state-hover"
         }`}
       >
         <span className={`flex items-center gap-2 text-[13px] leading-4 ${selected ? "text-white/90" : "text-ink-soft"}`}>

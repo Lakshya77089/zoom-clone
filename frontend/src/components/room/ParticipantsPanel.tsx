@@ -51,7 +51,7 @@ export function ParticipantsPanel({
           type="button"
           onClick={onClose}
           aria-label="Close participants"
-          className="absolute right-3 flex h-6 w-6 items-center justify-center rounded-full text-ink-soft hover:bg-canvas"
+          className="absolute right-3 flex h-6 w-6 items-center justify-center rounded-full text-ink-soft hover:bg-state-hover"
         >
           <CloseIcon size={16} />
         </button>
@@ -86,7 +86,7 @@ export function ParticipantsPanel({
                   onClick={() => onRemove(participant)}
                   data-testid="remove-participant"
                   aria-label={`Remove ${participant.display_name}`}
-                  className="h-6 rounded-lg bg-canvas px-2 text-xs text-zoom-red hover:bg-[#e4e8eb] focus:block sm:hidden sm:group-hover:block"
+                  className="h-6 rounded-lg bg-canvas px-2 text-xs text-zoom-red hover:bg-state-hover focus:block sm:hidden sm:group-hover:block"
                 >
                   Remove
                 </button>
@@ -107,11 +107,11 @@ export function ParticipantsPanel({
       </ul>
 
       <div className="flex justify-end gap-2 border-t-[0.8px] border-line px-3 py-3">
-        <button type="button" onClick={() => copy(inviteLink)} className="h-8 rounded-xl bg-canvas px-3.5 text-sm text-ink hover:bg-[#e4e8eb]">
+        <button type="button" onClick={() => copy(inviteLink)} className="h-8 rounded-xl bg-canvas px-3.5 text-sm text-ink hover:bg-state-hover">
           {copied ? "Link copied" : "Invite"}
         </button>
         {isHost && (
-          <button type="button" onClick={onMuteAll} data-testid="mute-all" className="h-8 rounded-xl bg-canvas px-3.5 text-sm text-ink hover:bg-[#e4e8eb]">
+          <button type="button" onClick={onMuteAll} data-testid="mute-all" className="h-8 rounded-xl bg-canvas px-3.5 text-sm text-ink hover:bg-state-hover">
             Mute All
           </button>
         )}

@@ -37,7 +37,7 @@ export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }
         aria-pressed={!enabled}
         title={label}
         data-testid={`prejoin-${testId}`}
-        className={`flex h-10 w-10 items-center justify-center rounded-full bg-canvas outline-none transition-colors hover:bg-[#e4e8eb] focus-visible:ring-2 focus-visible:ring-zoom-blue ${
+        className={`flex h-10 w-10 items-center justify-center rounded-full bg-canvas outline-none transition-colors hover:bg-state-hover focus-visible:ring-2 focus-visible:ring-zoom-blue ${
           enabled ? "text-ink" : "text-zoom-red"
         }`}
       >

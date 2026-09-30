@@ -78,7 +78,7 @@ export function Modal({ title, onClose, children, footer, widthClass = "max-w-[4
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="-mr-2 -mt-1 flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-canvas hover:text-ink"
+              className="-mr-2 -mt-1 flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-state-hover hover:text-ink"
             >
               <CloseIcon size={16} />
             </button>

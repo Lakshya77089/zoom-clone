@@ -18,8 +18,9 @@ interface MeetingDetailProps {
   onBack: () => void;
 }
 
-const outline =
-  "inline-flex h-8 items-center gap-1.5 rounded-lg border-[0.8px] border-line bg-white px-5 text-sm font-bold leading-5 text-[#131619] outline-none transition-colors hover:bg-canvas focus-visible:ring-2 focus-visible:ring-zoom-blue";
+const outlineBase =
+  "inline-flex h-8 items-center gap-1.5 rounded-lg border-[0.8px] border-line bg-white px-5 text-sm font-bold leading-5 text-[#131619] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zoom-blue";
+const outline = `${outlineBase} hover:bg-state-hover active:bg-state-press`;
 
 function whenLabel(meeting: Meeting, variant: MeetingDetailProps["variant"]): string {
   if (variant === "upcoming" && meeting.scheduled_start) {
@@ -61,7 +62,7 @@ export function MeetingDetail({ meeting, variant, starting, onStart, onDelete, o
             disabled={starting}
             aria-busy={starting || undefined}
             data-testid="meeting-start-button"
-            className="inline-flex h-8 items-center gap-2 rounded-lg bg-[#0e72ed] px-5 text-sm font-bold leading-5 text-white outline-none transition-colors hover:bg-zoom-blue-dark focus-visible:ring-2 focus-visible:ring-zoom-blue focus-visible:ring-offset-2 disabled:cursor-wait"
+            className="inline-flex h-8 items-center gap-2 rounded-lg bg-[#0e72ed] px-5 text-sm font-bold leading-5 text-white outline-none transition-colors hover:bg-zoom-blue-dark active:bg-zoom-blue-press focus-visible:ring-2 focus-visible:ring-zoom-blue focus-visible:ring-offset-2 disabled:cursor-wait"
           >
             {starting && <Spinner size={14} />}
             {isLive ? "Join" : "Start"}
@@ -74,7 +75,7 @@ export function MeetingDetail({ meeting, variant, starting, onStart, onDelete, o
           Copy Invitation
         </button>
         {variant === "upcoming" && (
-          <span aria-disabled="true" className={`${outline} ${unavailableClass}`}>
+          <span aria-disabled="true" className={`${outlineBase} ${unavailableClass}`}>
             <EditIcon size={12} />
             Edit
           </span>

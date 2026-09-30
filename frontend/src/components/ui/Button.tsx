@@ -11,8 +11,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  primary: "bg-zoom-blue font-medium text-white hover:bg-zoom-blue-dark active:bg-zoom-blue-dark",
-  secondary: "bg-canvas text-zoom-blue hover:bg-[#e4e8eb] active:bg-line",
+  primary: "bg-zoom-blue font-medium text-white hover:bg-zoom-blue-dark active:bg-zoom-blue-press",
+  secondary: "bg-canvas text-zoom-blue hover:bg-state-hover hover:text-zoom-blue-dark active:bg-state-press active:text-zoom-blue-press",
   danger: "bg-zoom-red text-white hover:bg-zoom-red-dark active:bg-zoom-red-dark",
   ghost: "text-zoom-blue hover:bg-zoom-blue-light",
 };

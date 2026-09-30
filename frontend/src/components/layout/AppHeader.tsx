@@ -59,7 +59,7 @@ export function AppHeader() {
         </span>
 
         <div className="ml-auto flex shrink-0 items-center gap-3 md:ml-0">
-          <Link href={ROUTES.meetings} aria-label="Search meetings" className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft hover:bg-canvas md:hidden">
+          <Link href={ROUTES.meetings} aria-label="Search meetings" className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft hover:bg-state-hover active:bg-state-press md:hidden">
             <SearchIcon size={16} />
           </Link>
           <span aria-hidden title="Activity Center" className={`flex h-8 w-8 items-center justify-center rounded-full text-ink-soft ${unavailableClass}`}>

@@ -13,8 +13,8 @@ interface ActionTileProps {
 }
 
 const tones = {
-  orange: "bg-zoom-orange [--tile-bg:var(--color-zoom-orange)]",
-  blue: "bg-zoom-tile [--tile-bg:var(--color-zoom-tile)]",
+  orange: "bg-zoom-orange active:bg-[#e56829] [--tile-bg:var(--color-zoom-orange)]",
+  blue: "bg-zoom-tile active:bg-[#0c63ce] [--tile-bg:var(--color-zoom-tile)]",
 };
 
 export function ActionTile({ label, icon: Icon, tone, onClick, busy, testId, trailing }: ActionTileProps) {
@@ -27,7 +27,7 @@ export function ActionTile({ label, icon: Icon, tone, onClick, busy, testId, tra
         aria-label={label}
         aria-busy={busy || undefined}
         data-testid={testId}
-        className={`flex h-14 w-14 items-center justify-center rounded-[20px] text-white outline-none transition-[transform,box-shadow] duration-150 hover:-translate-y-1 hover:shadow-[0_6px_12px_rgba(0,0,0,0.16)] focus-visible:ring-2 focus-visible:ring-zoom-blue focus-visible:ring-offset-2 disabled:cursor-wait ${tones[tone]}`}
+        className={`flex h-14 w-14 items-center justify-center rounded-[20px] text-white outline-none transition-[transform,box-shadow] duration-150 hover:-translate-y-1 hover:shadow-[0_4px_11px_0_#b3b3b3] focus-visible:-translate-y-1 focus-visible:shadow-[0_4px_11px_0_#b3b3b3] focus-visible:ring-2 focus-visible:ring-zoom-blue focus-visible:ring-offset-2 disabled:cursor-wait ${tones[tone]}`}
       >
         {busy ? <Spinner size={24} /> : <Icon size={28} />}
       </button>

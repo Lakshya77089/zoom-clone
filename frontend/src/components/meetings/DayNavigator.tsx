@@ -11,7 +11,7 @@ interface DayNavigatorProps {
 }
 
 const roundButton =
-  "flex h-6 w-6 items-center justify-center rounded-full text-ink-soft outline-none transition-colors hover:bg-canvas hover:text-ink focus-visible:ring-2 focus-visible:ring-zoom-blue disabled:cursor-not-allowed disabled:text-ink-disabled disabled:hover:bg-transparent";
+  "flex h-6 w-6 items-center justify-center rounded-full text-ink-soft outline-none transition-colors hover:bg-state-hover hover:text-ink active:bg-state-press focus-visible:ring-2 focus-visible:ring-zoom-blue disabled:cursor-not-allowed disabled:text-ink-disabled disabled:hover:bg-transparent";
 
 export function DayNavigator({ cursor, menuItems }: DayNavigatorProps) {
   const { selected, isToday, goToday, goPrevious, goNext } = cursor;
@@ -24,7 +24,7 @@ export function DayNavigator({ cursor, menuItems }: DayNavigatorProps) {
         aria-pressed={isToday}
         data-testid="calendar-today"
         className={`flex h-6 items-center gap-1 rounded-full border-[0.8px] px-2 text-xs leading-4 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zoom-blue ${
-          isToday ? "border-[#98a0a9] text-ink" : "border-zoom-blue text-zoom-blue hover:bg-zoom-blue-light"
+          isToday ? "border-[#98a0a9] text-ink hover:bg-state-hover" : "border-zoom-blue text-zoom-blue hover:bg-zoom-blue-light"
         }`}
       >
         <CalendarIcon size={12} />
@@ -52,7 +52,7 @@ export function DayNavigator({ cursor, menuItems }: DayNavigatorProps) {
               aria-haspopup="menu"
               aria-expanded={open}
               data-testid="calendar-more"
-              className={`${roundButton} ${open ? "bg-canvas text-ink" : ""}`}
+              className={`${roundButton} rounded-md ${open ? "bg-state-press text-ink" : ""}`}
             >
               <MoreIcon size={14} />
             </button>

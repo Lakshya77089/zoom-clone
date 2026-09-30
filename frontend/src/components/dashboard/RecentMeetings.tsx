@@ -3,7 +3,6 @@
 import { EmptyBoxIllustration } from "@/components/icons";
 import { CalendarCard, MeetingListSkeleton, RecentMeetingList } from "@/components/meetings/MeetingLists";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ROUTES } from "@/constants";
 import type { Meeting } from "@/types";
 
 interface RecentMeetingsProps {
@@ -15,7 +14,7 @@ interface RecentMeetingsProps {
 
 export function RecentMeetings({ meetings, loading, startingCode, onRejoin }: RecentMeetingsProps) {
   return (
-    <CalendarCard title="Recent meetings" headingId="recent-heading" viewAllHref={`${ROUTES.meetings}?tab=previous`} testId="recent-meetings">
+    <CalendarCard title="Recent meetings" headingId="recent-heading" openIcon testId="recent-meetings">
       {loading ? (
         <MeetingListSkeleton rows={2} />
       ) : meetings.length === 0 ? (

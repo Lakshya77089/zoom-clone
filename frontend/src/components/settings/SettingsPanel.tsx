@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AccountSolidIcon, AudioSolidIcon, ChatSolidIcon, CloseIcon, GeneralSolidIcon, VideoSolidIcon, type IconComponent } from "@/components/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { Switch } from "@/components/ui/Switch";
@@ -20,16 +21,16 @@ interface NavEntry {
 
 const NAV: NavEntry[] = [
   { id: "general", label: "General", icon: GeneralSolidIcon, tint: "bg-[#0e71eb]" },
-  { id: "audio", label: "Audio", icon: AudioSolidIcon, tint: "bg-[#23b25e]" },
-  { id: "video", label: "Video", icon: VideoSolidIcon, tint: "bg-[#23b25e]" },
-  { id: null, label: "Chat", icon: ChatSolidIcon, tint: "bg-[#23b25e]" },
-  { id: "profile", label: "My account", icon: AccountSolidIcon, tint: "bg-[#4f6cf5]" },
+  { id: "audio", label: "Audio", icon: AudioSolidIcon, tint: "bg-[#82c786]" },
+  { id: "video", label: "Video", icon: VideoSolidIcon, tint: "bg-[#82c786]" },
+  { id: null, label: "Chat", icon: ChatSolidIcon, tint: "bg-[#70c3a0]" },
+  { id: "profile", label: "My account", icon: AccountSolidIcon, tint: "bg-[#5b8def]" },
 ];
 
 function Section({ id, title, children, testId }: { id: SectionId; title: string; children: ReactNode; testId?: string }) {
   return (
     <section id={id} data-section={id} aria-labelledby={`${id}-heading`} data-testid={testId} className="scroll-mt-4 pb-8">
-      <h2 id={`${id}-heading`} className="text-sm font-bold leading-[14px] text-black">
+      <h2 id={`${id}-heading`} className="text-base font-bold leading-5 text-black">
         {title}
       </h2>
       <div className="mt-2">{children}</div>
@@ -42,6 +43,15 @@ export function SettingsPanel() {
   const { preferences, updatePreferences } = usePreferences();
   const [active, setActive] = useState<SectionId>("general");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !event.defaultPrevented) router.push(ROUTES.home);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [router]);
 
   const jump = (id: SectionId) => {
     setActive(id);
@@ -69,18 +79,20 @@ export function SettingsPanel() {
 
   return (
     <div
-      className="mx-auto flex h-full max-h-[660px] w-full max-w-[820px] flex-col overflow-hidden bg-white sm:rounded-xl sm:shadow-[0_0_24px_rgba(0,0,0,0.075)]"
+      role="dialog"
+      aria-labelledby="settings-title"
+      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-white sm:inset-x-auto sm:bottom-[35px] sm:left-1/2 sm:top-[35px] sm:w-[min(820px,calc(100vw-32px))] sm:-translate-x-1/2 sm:rounded sm:shadow-[0_2px_16px_rgba(0,0,0,0.1)]"
       data-testid="settings-page"
     >
-      <div className="flex h-[46px] shrink-0 items-center justify-between border-b-[0.8px] border-line-soft px-4">
-        <h1 className="text-xl font-normal leading-5 text-black">Settings</h1>
-        <Link href={ROUTES.home} aria-label="Close settings" className="flex h-6 w-6 items-center justify-center rounded text-[#222230] hover:bg-canvas">
+      <div className="flex h-[46px] shrink-0 items-center justify-between border-b-[0.8px] border-line-soft pl-[22px] pr-4">
+        <h1 id="settings-title" className="text-xl font-normal leading-5 text-black">Settings</h1>
+        <Link href={ROUTES.home} aria-label="Close settings" className="flex h-6 w-6 items-center justify-center rounded text-[#222230] hover:bg-state-hover">
           <CloseIcon size={16} />
         </Link>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col sm:flex-row">
-        <nav aria-label="Settings sections" className="shrink-0 border-b-[0.8px] border-line-soft p-2 sm:w-[167px] sm:border-b-0 sm:border-r-[0.8px] sm:p-4">
+        <nav aria-label="Settings sections" className="shrink-0 border-b-[0.8px] border-line-soft p-2 sm:w-[166px] sm:border-b-0 sm:border-r-[0.8px] sm:px-[15px] sm:pt-[22px]">
           <ul className="flex gap-1 overflow-x-auto sm:flex-col sm:gap-3 sm:overflow-visible">
             {NAV.map(({ id, label, icon: Icon, tint }) => {
               const selected = id !== null && id === active;
@@ -92,10 +104,10 @@ export function SettingsPanel() {
                     onClick={() => id && jump(id)}
                     aria-current={selected || undefined}
                     className={`flex h-8 w-full items-center gap-2 whitespace-nowrap rounded-xl px-3 text-base leading-4 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zoom-blue disabled:cursor-not-allowed sm:w-[134px] ${
-                      selected ? "bg-zoom-tile text-white" : "text-[#131619] hover:bg-canvas disabled:hover:bg-transparent"
+                      selected ? "bg-zoom-tile text-white" : "text-[#131619] hover:bg-state-hover disabled:hover:bg-transparent"
                     }`}
                   >
-                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md ${selected ? "bg-white/20" : tint}`}>
+                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md ${selected ? "" : tint}`}>
                       <Icon size={13} className="text-white" />
                     </span>
                     {label}

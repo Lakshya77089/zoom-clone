@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ITEMS, SETTINGS_NAV_ITEM, type NavItem } from "@/constants";
+import { NAV_ITEMS, ROUTES, SETTINGS_NAV_ITEM, type NavItem } from "@/constants";
 import { unavailableClass } from "@/components/ui/unavailable";
 
 function isActive(pathname: string, href?: string): boolean {
@@ -35,7 +35,7 @@ function RailItem({ item, active, testId }: { item: NavItem; active: boolean; te
       href={href}
       aria-current={active ? "page" : undefined}
       data-testid={testId}
-      className={`${itemClass} ${active ? "bg-white text-ink" : "text-ink-soft hover:bg-white/60 hover:text-ink"}`}
+      className={`${itemClass} ${active ? "bg-white text-ink" : "text-ink-soft hover:bg-state-hover hover:text-ink"}`}
     >
       {content}
     </Link>
@@ -43,7 +43,8 @@ function RailItem({ item, active, testId }: { item: NavItem; active: boolean; te
 }
 
 export function Sidebar() {
-  const pathname = usePathname();
+  const current = usePathname();
+  const pathname = current === ROUTES.settings ? ROUTES.home : current;
   return (
     <nav aria-label="Main" className="flex w-20 shrink-0 flex-col items-center gap-0.5 bg-canvas pb-4 pt-1" data-testid="side-rail">
       {NAV_ITEMS.map((item) => (

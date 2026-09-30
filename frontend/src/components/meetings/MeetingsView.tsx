@@ -47,7 +47,7 @@ function ListMessage({ text, testId }: { text: string; testId: string }) {
   );
 }
 
-const iconButton = "flex h-7 w-7 items-center justify-center rounded-md text-ink outline-none hover:bg-canvas focus-visible:ring-2 focus-visible:ring-zoom-blue";
+const iconButton = "flex h-7 w-7 items-center justify-center rounded-md text-ink outline-none hover:bg-state-hover active:bg-state-press focus-visible:ring-2 focus-visible:ring-zoom-blue";
 
 export function MeetingsView() {
   const router = useRouter();

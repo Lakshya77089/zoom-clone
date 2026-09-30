@@ -59,7 +59,7 @@ export function UpcomingMeetings({ meetings, loading, startingCode, onStart, onD
   );
 
   return (
-    <CalendarCard title="Upcoming meetings" headingId="upcoming-heading" viewAllHref={ROUTES.meetings} testId="upcoming-meetings" notice toolbar={toolbar}>
+    <CalendarCard title="Upcoming meetings" headingId="upcoming-heading" openIcon testId="upcoming-meetings" notice toolbar={toolbar}>
       {loading || !selected ? (
         <MeetingListSkeleton />
       ) : dayMeetings.length === 0 ? (

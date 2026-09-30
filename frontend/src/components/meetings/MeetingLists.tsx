@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { CaretDownIcon, ExternalLinkIcon, InfoIcon } from "@/components/icons";
 import { MeetingCard } from "@/components/meetings/MeetingCard";
 import { formatGroupLabel } from "@/lib/format";
@@ -89,7 +88,7 @@ export function MeetingListSkeleton({ rows = 3 }: { rows?: number }) {
 interface CalendarCardProps {
   title: string;
   headingId: string;
-  viewAllHref?: string;
+  openIcon?: boolean;
   children: ReactNode;
   testId?: string;
   notice?: boolean;
@@ -98,7 +97,7 @@ interface CalendarCardProps {
 
 const roundIcon = "flex h-6 w-6 items-center justify-center rounded-full text-ink-soft";
 
-export function CalendarCard({ title, headingId, viewAllHref, children, testId, notice = false, toolbar }: CalendarCardProps) {
+export function CalendarCard({ title, headingId, openIcon = false, children, testId, notice = false, toolbar }: CalendarCardProps) {
   return (
     <section className="overflow-hidden rounded-lg border-[0.8px] border-line-soft bg-white" aria-labelledby={headingId} data-testid={testId}>
       {notice && (
@@ -114,10 +113,10 @@ export function CalendarCard({ title, headingId, viewAllHref, children, testId, 
           {title}
           <CaretDownIcon size={14} />
         </h2>
-        {viewAllHref && (
-          <Link href={viewAllHref} aria-label={`Open ${title.toLowerCase()}`} className={`${roundIcon} absolute right-4 hover:bg-canvas`}>
+        {openIcon && (
+          <span aria-hidden className={`${roundIcon} absolute right-4 ${unavailableClass}`}>
             <ExternalLinkIcon size={14} />
-          </Link>
+          </span>
         )}
       </div>
       {toolbar ?? <div className="border-b-[0.8px] border-line" />}
