@@ -44,6 +44,11 @@ def get_meeting(code: str, meetings: Meetings, public_url: PublicUrl):
     return MeetingOut.present(meetings.get_joinable(code), public_url)
 
 
+@router.delete("/{code}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_meeting(code: str, user: CurrentUser, meetings: Meetings):
+    meetings.delete(code, user)
+
+
 @router.post("/{code}/start", response_model=MeetingSessionOut)
 def start_meeting(code: str, user: CurrentUser, meetings: Meetings, public_url: PublicUrl):
     return _session(public_url, *meetings.start(code, user))

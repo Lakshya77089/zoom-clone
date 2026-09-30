@@ -139,6 +139,15 @@ class MeetingController:
         self.db.commit()
         return meeting
 
+    def delete(self, raw_code: str, user: User) -> None:
+        meeting = self.get_by_code(raw_code)
+        if meeting.host_id != user.id:
+            raise ForbiddenError("Only the host can delete this meeting.")
+        if meeting.status != MeetingStatus.SCHEDULED:
+            raise ValidationError("Only meetings that have not started can be deleted.")
+        self.db.delete(meeting)
+        self.db.commit()
+
     def get_room_state(self, raw_code: str, participant_id: int) -> tuple[Meeting, Participant]:
         meeting = self.get_by_code(raw_code)
         return meeting, self.get_participant(meeting, participant_id)
