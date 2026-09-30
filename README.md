@@ -123,7 +123,7 @@ cp .env.example .env
 uvicorn app.main:app --reload --port 8000
 ```
 
-On first start the database is created and seeded with a default user (Alex Johnson), 4 upcoming meetings and 5 past meetings with participants. To reset, delete `zoom.db` and restart.
+On first start the database is created and seeded with a default user (Alex Johnson), 6 upcoming meetings and 5 past meetings with participants. To reset, delete `zoom.db` and restart.
 
 ### Frontend
 

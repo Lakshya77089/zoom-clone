@@ -17,26 +17,28 @@ from app.utils.meeting_code import generate_meeting_code
 from app.utils.time import utcnow
 
 USERS = [
-    ("Alex Johnson", settings.default_user_email, "#0B5CFF"),
-    ("Priya Sharma", "priya.sharma@example.com", "#E8710A"),
-    ("Rahul Verma", "rahul.verma@example.com", "#188038"),
-    ("Emily Chen", "emily.chen@example.com", "#A142F4"),
-    ("Marcus Lee", "marcus.lee@example.com", "#D93025"),
+    ("Alex Johnson", settings.default_user_email, "#F26D21"),
+    ("Daniel Kim", "daniel.kim@example.com", "#0E71EB"),
+    ("Ananya Iyer", "ananya.iyer@example.com", "#23B25E"),
+    ("Lucas Moreau", "lucas.moreau@example.com", "#7B61FF"),
+    ("Olivia Brooks", "olivia.brooks@example.com", "#E8173D"),
 ]
 
 UPCOMING = [
-    ("Weekly Team Sync", "Status updates and blockers for the sprint.", timedelta(hours=2), 30),
-    ("Product Roadmap Review", "Walk through Q4 roadmap priorities with product.", timedelta(days=1), 60),
-    ("Design Critique", "Review new onboarding screens.", timedelta(days=2, hours=3), 45),
-    ("1:1 with Priya", None, timedelta(days=4), 30),
+    ("Daily Standup", "Quick round of updates and blockers.", timedelta(hours=1), 15),
+    ("Q4 Marketing Kickoff", "Campaign goals, owners and the launch timeline.", timedelta(hours=4), 45),
+    ("Customer Onboarding Review", "Go through feedback from the latest onboarding cohort.", timedelta(days=1, hours=2), 60),
+    ("Hiring Sync - Frontend Engineer", "Shortlist candidates and plan the interview loop.", timedelta(days=2, hours=5), 30),
+    ("1:1 with Daniel", None, timedelta(days=3, hours=1), 30),
+    ("Monthly All-Hands", "Company updates, wins and open Q&A.", timedelta(days=6), 60),
 ]
 
 RECENT = [
-    ("Sprint Planning", MeetingType.SCHEDULED, timedelta(days=1), 55, ["Priya Sharma", "Rahul Verma", "Emily Chen"]),
-    ("Alex Johnson's Zoom Meeting", MeetingType.INSTANT, timedelta(days=2), 18, ["Marcus Lee"]),
-    ("Client Demo - Acme Corp", MeetingType.SCHEDULED, timedelta(days=3), 42, ["Emily Chen", "Marcus Lee"]),
-    ("Backend Architecture Discussion", MeetingType.SCHEDULED, timedelta(days=5), 65, ["Rahul Verma", "Priya Sharma"]),
-    ("Alex Johnson's Zoom Meeting", MeetingType.INSTANT, timedelta(days=7), 12, ["Priya Sharma"]),
+    ("Release Retrospective", MeetingType.SCHEDULED, timedelta(days=1), 48, ["Daniel Kim", "Ananya Iyer", "Lucas Moreau"]),
+    ("Alex Johnson's Zoom Meeting", MeetingType.INSTANT, timedelta(days=2), 22, ["Olivia Brooks"]),
+    ("Partner Demo - Northwind Traders", MeetingType.SCHEDULED, timedelta(days=3), 37, ["Lucas Moreau", "Olivia Brooks"]),
+    ("API Design Review", MeetingType.SCHEDULED, timedelta(days=4), 70, ["Ananya Iyer", "Daniel Kim"]),
+    ("Alex Johnson's Zoom Meeting", MeetingType.INSTANT, timedelta(days=6), 9, ["Daniel Kim"]),
 ]
 
 
