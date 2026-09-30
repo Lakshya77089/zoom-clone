@@ -25,13 +25,14 @@ export function VideoGrid({ participants, selfId, localStream, mesh }: VideoGrid
       {ordered.map((participant) => {
         const isSelf = participant.id === selfId;
         return (
-          <VideoTile
-            key={participant.id}
-            participant={participant}
-            isSelf={isSelf}
-            stream={isSelf ? localStream : (mesh.streams.get(participant.id) ?? null)}
-            status={isSelf ? undefined : mesh.statuses.get(participant.id)}
-          />
+          <div key={participant.id} className="flex min-h-0 min-w-0 items-center justify-center [container-type:size]">
+            <VideoTile
+              participant={participant}
+              isSelf={isSelf}
+              stream={isSelf ? localStream : (mesh.streams.get(participant.id) ?? null)}
+              status={isSelf ? undefined : mesh.statuses.get(participant.id)}
+            />
+          </div>
         );
       })}
     </div>

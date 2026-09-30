@@ -1,15 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { MeetingInfo } from "@/components/room/MeetingInfo";
 import { MeetingToolbar } from "@/components/room/MeetingToolbar";
 import { ParticipantsPanel } from "@/components/room/ParticipantsPanel";
 import { RemoteAudio } from "@/components/room/RemoteAudio";
 import { VideoGrid } from "@/components/room/VideoGrid";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
+import { ROUTES } from "@/constants";
+import { useCopyWithToast } from "@/hooks/useCopyWithToast";
 import { useLocalMedia } from "@/hooks/useLocalMedia";
 import { usePeerMesh } from "@/hooks/usePeerMesh";
 import { api } from "@/lib/api";
+import { buildInvitation } from "@/lib/format";
 import { clearParticipantId } from "@/lib/participantSession";
 import type { Participant, RoomState } from "@/types";
 
@@ -18,11 +23,10 @@ interface LiveRoomProps {
   state: RoomState;
   setState: Dispatch<SetStateAction<RoomState | null>>;
   refresh: () => Promise<void>;
+  showInviteOnLoad: boolean;
 }
 
 type MediaChanges = Partial<Pick<Participant, "is_muted" | "is_video_on">>;
-
-const TOAST_DURATION_MS = 3000;
 
 function patchSelf(state: RoomState, changes: MediaChanges): RoomState {
   const me = { ...state.me, ...changes };
@@ -33,12 +37,14 @@ function patchSelf(state: RoomState, changes: MediaChanges): RoomState {
   };
 }
 
-export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
+export function LiveRoom({ code, state, setState, refresh, showInviteOnLoad }: LiveRoomProps) {
   const router = useRouter();
+  const toast = useToast();
+  const copy = useCopyWithToast();
   const { meeting, me, participants } = state;
   const isHost = me.role === "host";
   const [panelOpen, setPanelOpen] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<Participant | null>(null);
   const { stream, error: mediaError } = useLocalMedia({ audioEnabled: !me.is_muted, videoEnabled: me.is_video_on });
   const mesh = usePeerMesh(
     code,
@@ -47,24 +53,18 @@ export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
     stream,
   );
 
-  useEffect(() => {
-    if (!toast) return;
-    const id = window.setTimeout(() => setToast(null), TOAST_DURATION_MS);
-    return () => window.clearTimeout(id);
-  }, [toast]);
-
   const run = useCallback(
     async (action: () => Promise<unknown>, success?: string) => {
       try {
         await action();
-        if (success) setToast(success);
+        if (success) toast(success);
       } catch (err) {
-        setToast(err instanceof Error ? err.message : "Something went wrong.");
+        toast(err instanceof Error ? err.message : "Something went wrong.", "error");
       } finally {
         await refresh();
       }
     },
-    [refresh],
+    [refresh, toast],
   );
 
   const updateSelf = (changes: MediaChanges) => {
@@ -77,23 +77,30 @@ export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
       await action();
     } finally {
       clearParticipantId(code);
-      router.push("/");
+      router.push(ROUTES.home);
     }
   };
 
-  const handleRemove = (participant: Participant) => {
-    if (!window.confirm(`Remove ${participant.display_name} from this meeting?`)) return;
-    void run(() => api.removeParticipant(code, participant.id, me.id), `${participant.display_name} was removed`);
+  const muteAll = () => void run(() => api.muteAll(code, me.id), "All participants have been muted");
+
+  const confirmRemove = () => {
+    if (!removing) return;
+    const target = removing;
+    setRemoving(null);
+    void run(() => api.removeParticipant(code, target.id, me.id), `${target.display_name} was removed`);
   };
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-room text-white">
-      <header className="flex h-11 shrink-0 items-center justify-between gap-3 px-3">
-        <MeetingInfo meeting={meeting} />
-        <p className="truncate text-sm font-bold text-white/90" data-testid="room-title">
+    <div className="flex h-dvh flex-col overflow-hidden bg-room text-white" data-testid="meeting-room" data-meeting-code={code}>
+      <header className="relative z-30 flex h-11 shrink-0 items-center justify-between gap-3 px-2 sm:px-3">
+        <MeetingInfo meeting={meeting} defaultOpen={showInviteOnLoad} />
+        <p className="min-w-0 truncate text-[13px] font-semibold text-white/90" data-testid="room-title">
           {meeting.title}
         </p>
-        <span className="w-12" />
+        <span className="flex w-12 items-center justify-end gap-1.5 text-[12px] text-white/60 sm:w-24">
+          <span className="h-2 w-2 rounded-full bg-zoom-green" aria-hidden />
+          <span className="hidden sm:inline">Live</span>
+        </span>
       </header>
 
       <div className="relative flex min-h-0 flex-1">
@@ -113,17 +120,17 @@ export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
             isHost={isHost}
             inviteLink={meeting.invite_link}
             onClose={() => setPanelOpen(false)}
-            onMuteAll={() => void run(() => api.muteAll(code, me.id), "All participants have been muted")}
-            onRemove={handleRemove}
+            onMuteAll={muteAll}
+            onRemove={setRemoving}
           />
         )}
 
-        {(toast || mediaError) && (
+        {mediaError && (
           <div
             role="status"
-            className="pointer-events-none absolute left-1/2 top-3 z-30 max-w-[90%] -translate-x-1/2 rounded-lg bg-black/80 px-4 py-2 text-center text-sm"
+            className="pointer-events-none absolute left-1/2 top-2 z-20 max-w-[90%] -translate-x-1/2 rounded-lg bg-black/75 px-4 py-2 text-center text-[13px]"
           >
-            {toast ?? mediaError}
+            {mediaError}
           </div>
         )}
       </div>
@@ -137,9 +144,23 @@ export function LiveRoom({ code, state, setState, refresh }: LiveRoomProps) {
         onToggleMute={() => updateSelf({ is_muted: !me.is_muted })}
         onToggleVideo={() => updateSelf({ is_video_on: !me.is_video_on })}
         onToggleParticipants={() => setPanelOpen((open) => !open)}
+        onCopyLink={() => void copy(meeting.invite_link, "Invite link copied")}
+        onCopyInvitation={() => void copy(buildInvitation(meeting), "Invitation copied to clipboard")}
+        onCopyMeetingId={() => void copy(meeting.meeting_code, "Meeting ID copied")}
+        onMuteAll={muteAll}
         onLeave={() => void exit(() => api.leaveMeeting(code, me.id))}
         onEndForAll={() => void exit(() => api.endMeeting(code, me.id))}
       />
+
+      {removing && (
+        <ConfirmDialog
+          title="Remove participant?"
+          message={`${removing.display_name} will be removed from this meeting.`}
+          confirmLabel="Remove"
+          onConfirm={confirmRemove}
+          onCancel={() => setRemoving(null)}
+        />
+      )}
     </div>
   );
 }

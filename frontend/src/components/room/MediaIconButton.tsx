@@ -15,6 +15,7 @@ const labels = {
 export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }: MediaIconButtonProps) {
   const Icon = kind === "audio" ? (enabled ? Mic : MicOff) : enabled ? Video : VideoOff;
   const label = enabled ? labels[kind].on : labels[kind].off;
+  const testId = kind === "audio" ? "toggle-audio" : "toggle-video";
 
   if (variant === "round") {
     return (
@@ -22,9 +23,11 @@ export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }
         type="button"
         onClick={onToggle}
         aria-label={label}
+        aria-pressed={!enabled}
         title={label}
-        className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors ${
-          enabled ? "bg-white/20 text-white hover:bg-white/30" : "bg-zoom-red text-white hover:bg-zoom-red-dark"
+        data-testid={`prejoin-${testId}`}
+        className={`flex h-12 w-12 items-center justify-center rounded-full outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white ${
+          enabled ? "bg-white/20 text-white backdrop-blur hover:bg-white/30" : "bg-zoom-red text-white hover:bg-zoom-red-dark"
         }`}
       >
         <Icon size={22} />
@@ -37,10 +40,13 @@ export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }
       type="button"
       onClick={onToggle}
       aria-label={label}
-      className="flex min-w-16 flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-white transition-colors hover:bg-room-hover"
+      aria-pressed={!enabled}
+      data-testid={testId}
+      data-state={enabled ? "on" : "off"}
+      className="flex min-w-[60px] flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-white outline-none transition-colors hover:bg-room-hover focus-visible:ring-2 focus-visible:ring-white/60 sm:min-w-[72px]"
     >
       <Icon size={22} className={enabled ? "" : "text-zoom-red"} />
-      <span className="text-[11px]">{label}</span>
+      <span className="whitespace-nowrap text-[11px]">{label}</span>
     </button>
   );
 }

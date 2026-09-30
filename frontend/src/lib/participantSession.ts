@@ -12,3 +12,17 @@ export function readParticipantId(code: string): number | null {
 export function clearParticipantId(code: string): void {
   sessionStorage.removeItem(key(code));
 }
+
+const newMeetingKey = (code: string) => `zoom:new-meeting:${code}`;
+
+export function markNewMeeting(code: string): void {
+  sessionStorage.setItem(newMeetingKey(code), "1");
+}
+
+export function isNewMeeting(code: string): boolean {
+  return sessionStorage.getItem(newMeetingKey(code)) === "1";
+}
+
+export function clearNewMeeting(code: string): void {
+  sessionStorage.removeItem(newMeetingKey(code));
+}

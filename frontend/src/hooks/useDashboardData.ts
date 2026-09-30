@@ -2,27 +2,26 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import type { Meeting, User } from "@/types";
+import type { Meeting } from "@/types";
 
-interface DashboardData {
-  user: User | null;
+interface MeetingLists {
   upcoming: Meeting[];
   recent: Meeting[];
 }
 
-const EMPTY: DashboardData = { user: null, upcoming: [], recent: [] };
+const EMPTY: MeetingLists = { upcoming: [], recent: [] };
 
 export function useDashboardData() {
-  const [data, setData] = useState<DashboardData>(EMPTY);
+  const [data, setData] = useState<MeetingLists>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(
     () =>
-      Promise.all([api.getCurrentUser(), api.getUpcomingMeetings(), api.getRecentMeetings()])
+      Promise.all([api.getUpcomingMeetings(), api.getRecentMeetings()])
         .then(
-          ([user, upcoming, recent]) => {
-            setData({ user, upcoming, recent });
+          ([upcoming, recent]) => {
+            setData({ upcoming, recent });
             setError(null);
           },
           (err: unknown) => setError(err instanceof Error ? err.message : "Unable to load meetings."),

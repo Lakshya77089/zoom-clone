@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export function useDismissible<T extends HTMLElement = HTMLDivElement>() {
-  const [open, setOpen] = useState(false);
+export function useDismissible<T extends HTMLElement = HTMLDivElement>(initialOpen = false) {
+  const [open, setOpen] = useState(initialOpen);
   const ref = useRef<T>(null);
 
   useEffect(() => {

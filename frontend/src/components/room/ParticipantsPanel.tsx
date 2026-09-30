@@ -37,11 +37,12 @@ export function ParticipantsPanel({
 
   return (
     <aside
-      className="absolute inset-0 z-20 flex flex-col bg-white text-ink sm:static sm:w-80 sm:shrink-0 sm:border-l sm:border-black/20"
+      className="absolute inset-0 z-20 flex animate-fade-in flex-col bg-white text-ink sm:static sm:w-80 sm:shrink-0 sm:border-l sm:border-black/20"
       aria-label="Participants"
+      data-testid="participants-panel"
     >
       <div className="flex h-12 items-center justify-between border-b border-line px-4">
-        <h2 className="text-sm font-bold">Participants ({participants.length})</h2>
+        <h2 className="text-sm font-semibold">Participants ({participants.length})</h2>
         <button type="button" onClick={onClose} aria-label="Close participants" className="rounded p-1 text-ink-muted hover:bg-canvas">
           <X size={18} />
         </button>
@@ -51,17 +52,19 @@ export function ParticipantsPanel({
         {sorted.map((participant) => {
           const isSelf = participant.id === selfId;
           return (
-            <li key={participant.id} className="group flex items-center gap-3 px-4 py-2 hover:bg-canvas" data-testid="participant-row">
+            <li key={participant.id} className="group flex items-center gap-3 px-4 py-2 hover:bg-hover" data-testid="participant-row">
               <Avatar name={participant.display_name} size="sm" />
               <p className="min-w-0 flex-1 truncate text-sm">
-                <span className="font-bold">{participant.display_name}</span>{" "}
+                <span className="font-medium">{participant.display_name}</span>{" "}
                 <span className="text-ink-muted">{describe(participant, isSelf)}</span>
               </p>
               {isHost && !isSelf && (
                 <button
                   type="button"
                   onClick={() => onRemove(participant)}
-                  className="rounded-md border border-line px-2 py-0.5 text-xs font-bold text-zoom-red hover:bg-zoom-red/5 sm:hidden sm:group-hover:block"
+                  data-testid="remove-participant"
+                  aria-label={`Remove ${participant.display_name}`}
+                  className="rounded-md border border-line px-2 py-0.5 text-xs font-semibold text-zoom-red hover:bg-zoom-red/5 focus:block sm:hidden sm:group-hover:block"
                 >
                   Remove
                 </button>
@@ -85,7 +88,7 @@ export function ParticipantsPanel({
         <button
           type="button"
           onClick={() => copy(inviteLink)}
-          className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg border border-line text-sm font-bold hover:bg-canvas"
+          className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[10px] border border-outline text-sm font-semibold hover:bg-hover"
         >
           {copied ? <Check size={16} /> : <UserPlus size={16} />}
           {copied ? "Link copied" : "Invite"}
@@ -94,7 +97,8 @@ export function ParticipantsPanel({
           <button
             type="button"
             onClick={onMuteAll}
-            className="h-9 flex-1 rounded-lg border border-line text-sm font-bold hover:bg-canvas"
+            data-testid="mute-all"
+            className="h-9 flex-1 rounded-[10px] border border-outline text-sm font-semibold hover:bg-hover"
           >
             Mute All
           </button>

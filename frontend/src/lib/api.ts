@@ -80,6 +80,7 @@ async function request<T>(
 
   const isJson = response.headers.get("content-type")?.includes("application/json") ?? false;
   const payload = isJson ? await response.json().catch(() => null) : null;
+  if (response.status === 204) return undefined as T;
   if (!response.ok) {
     throw new ApiError(response.status, extractMessage(payload, "Something went wrong. Please try again."));
   }
@@ -94,6 +95,7 @@ export const api = {
   createInstantMeeting: () => request<MeetingSession>("/meetings/instant", { method: "POST" }),
   scheduleMeeting: (input: ScheduleMeetingInput) => request<Meeting>("/meetings", { method: "POST", body: input }),
   getMeeting: (code: string) => request<Meeting>(`/meetings/${code}`),
+  deleteMeeting: (code: string) => request<void>(`/meetings/${code}`, { method: "DELETE" }),
   startMeeting: (code: string) => request<MeetingSession>(`/meetings/${code}/start`, { method: "POST" }),
   joinMeeting: (code: string, displayName: string, media: MediaChanges = {}) =>
     request<MeetingSession>(`/meetings/${code}/join`, {

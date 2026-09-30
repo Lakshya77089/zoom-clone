@@ -23,9 +23,11 @@ export function VideoTile({ participant, isSelf, stream, status = "connecting" }
 
   return (
     <div
-      className="relative flex min-h-0 items-center justify-center overflow-hidden rounded-lg bg-room-tile"
+      className="relative flex aspect-video w-[min(100cqw,calc(100cqh*16/9))] items-center justify-center overflow-hidden rounded-xl bg-room-tile"
       data-testid="video-tile"
       data-participant-id={participant.id}
+      data-muted={participant.is_muted}
+      data-video={participant.is_video_on}
     >
       {showVideo ? (
         <StreamVideo stream={stream} mirrored={isSelf} />

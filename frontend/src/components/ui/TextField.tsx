@@ -1,18 +1,28 @@
-import type { InputHTMLAttributes } from "react";
+import type { InputHTMLAttributes, ReactNode } from "react";
+import { FieldMessage, inputClasses } from "@/components/ui/field";
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  id: string;
   label: string;
+  error?: string | null;
+  hint?: ReactNode;
 }
 
-export function TextField({ label, id, className = "", ...props }: TextFieldProps) {
+export function TextField({ label, id, error, hint, className = "", ...props }: TextFieldProps) {
+  const messageId = `${id}-message`;
   return (
-    <label htmlFor={id} className="block">
-      <span className="mb-1.5 block text-sm font-bold text-ink">{label}</span>
+    <div>
+      <label htmlFor={id} className="mb-2 block text-sm font-medium text-ink">
+        {label}
+      </label>
       <input
         id={id}
-        className={`h-10 w-full rounded-lg border border-line bg-white px-3 text-sm outline-none transition focus:border-zoom-blue focus:ring-2 focus:ring-zoom-blue/20 ${className}`}
+        aria-invalid={Boolean(error) || undefined}
+        aria-describedby={error || hint ? messageId : undefined}
+        className={`${inputClasses(Boolean(error))} ${className}`}
         {...props}
       />
-    </label>
+      <FieldMessage id={messageId} error={error} hint={hint} />
+    </div>
   );
 }

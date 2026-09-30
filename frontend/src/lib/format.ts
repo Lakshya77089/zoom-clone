@@ -32,6 +32,13 @@ export function formatDayLabel(value: string): string {
   return date.toLocaleDateString(LOCALE, { weekday: "short", month: "short", day: "numeric" });
 }
 
+export function formatGroupLabel(value: string): string {
+  const date = new Date(value);
+  const relative = formatDayLabel(value);
+  const full = date.toLocaleDateString(LOCALE, { weekday: "long", month: "long", day: "numeric" });
+  return relative === "Today" || relative === "Tomorrow" ? `${relative} · ${full}` : full;
+}
+
 export function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;

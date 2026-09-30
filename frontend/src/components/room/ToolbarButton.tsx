@@ -4,28 +4,33 @@ interface ToolbarButtonProps {
   label: string;
   icon: LucideIcon;
   onClick?: () => void;
-  disabled?: boolean;
   active?: boolean;
   badge?: number;
-  className?: string;
+  testId?: string;
+  expanded?: boolean;
 }
 
-export function ToolbarButton({ label, icon: Icon, onClick, disabled, active, badge, className = "" }: ToolbarButtonProps) {
+export function ToolbarButton({ label, icon: Icon, onClick, active, badge, testId, expanded }: ToolbarButtonProps) {
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled}
       aria-label={label}
-      aria-pressed={active}
-      className={`relative flex min-w-16 flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-white transition-colors hover:bg-room-hover disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent ${
+      aria-pressed={expanded === undefined ? active : undefined}
+      aria-expanded={expanded}
+      data-testid={testId}
+      className={`relative flex min-w-[60px] flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-white outline-none transition-colors hover:bg-room-hover focus-visible:ring-2 focus-visible:ring-white/60 sm:min-w-[72px] ${
         active ? "bg-room-hover" : ""
-      } ${className}`}
+      }`}
     >
-      <Icon size={22} />
-      {badge !== undefined && (
-        <span className="absolute right-3 top-0.5 min-w-4 rounded-full bg-room-panel px-1 text-[10px] font-bold leading-4">{badge}</span>
-      )}
+      <span className="relative">
+        <Icon size={22} />
+        {badge !== undefined && (
+          <span className="absolute -right-3 -top-1.5 min-w-[18px] rounded-full bg-room-panel px-1 text-center text-[10px] font-semibold leading-[16px] ring-2 ring-room-bar">
+            {badge}
+          </span>
+        )}
+      </span>
       <span className="whitespace-nowrap text-[11px]">{label}</span>
     </button>
   );

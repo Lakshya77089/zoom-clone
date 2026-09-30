@@ -1,9 +1,12 @@
 "use client";
 
-import { CalendarX2 } from "lucide-react";
+import Link from "next/link";
+import { CalendarPlus } from "lucide-react";
 import { ClockCard } from "@/components/dashboard/ClockCard";
-import { UpcomingMeetingItem } from "@/components/dashboard/UpcomingMeetingItem";
-import { formatDayLabel } from "@/lib/format";
+import { MeetingListSkeleton, UpcomingMeetingList } from "@/components/meetings/MeetingLists";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ROUTES } from "@/constants";
 import type { Meeting } from "@/types";
 
 interface UpcomingMeetingsProps {
@@ -11,56 +14,40 @@ interface UpcomingMeetingsProps {
   loading: boolean;
   startingCode: string | null;
   onStart: (meeting: Meeting) => void;
+  onDelete: (meeting: Meeting) => void;
+  onSchedule: () => void;
 }
 
-function groupByDay(meetings: Meeting[]): [string, Meeting[]][] {
-  const groups = new Map<string, Meeting[]>();
-  for (const meeting of meetings) {
-    const label = formatDayLabel(meeting.scheduled_start ?? meeting.created_at);
-    groups.set(label, [...(groups.get(label) ?? []), meeting]);
-  }
-  return [...groups.entries()];
-}
-
-export function UpcomingMeetings({ meetings, loading, startingCode, onStart }: UpcomingMeetingsProps) {
+export function UpcomingMeetings({ meetings, loading, startingCode, onStart, onDelete, onSchedule }: UpcomingMeetingsProps) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm" aria-labelledby="upcoming-heading">
+    <section className="overflow-hidden rounded-2xl border border-line bg-white" aria-labelledby="upcoming-heading" data-testid="upcoming-meetings">
       <ClockCard />
-      <div className="flex items-center justify-between px-6 pb-2 pt-5">
-        <h2 id="upcoming-heading" className="text-base font-bold">
+      <div className="flex h-12 items-center justify-between px-5">
+        <h2 id="upcoming-heading" className="text-[15px] font-semibold">
           Upcoming meetings
         </h2>
-        <span className="text-xs font-bold text-ink-muted">{meetings.length} scheduled</span>
+        <Link href={ROUTES.meetings} className="text-[13px] font-medium text-zoom-blue hover:underline">
+          View all
+        </Link>
       </div>
 
       {loading ? (
-        <div className="space-y-3 px-6 py-4">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-14 animate-pulse rounded-lg bg-canvas" />
-          ))}
-        </div>
+        <MeetingListSkeleton />
       ) : meetings.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 px-6 py-10 text-center text-ink-muted">
-          <CalendarX2 size={32} />
-          <p className="text-sm">No upcoming meetings</p>
-        </div>
+        <EmptyState
+          icon={CalendarPlus}
+          title="No upcoming meetings"
+          description="Scheduled meetings will show up here."
+          testId="upcoming-empty"
+          action={
+            <Button variant="secondary" size="sm" onClick={onSchedule}>
+              Schedule a meeting
+            </Button>
+          }
+        />
       ) : (
-        <div className="max-h-[420px] overflow-y-auto pb-2">
-          {groupByDay(meetings).map(([day, items]) => (
-            <div key={day}>
-              <p className="bg-canvas px-6 py-1.5 text-xs font-bold uppercase tracking-wide text-ink-muted">{day}</p>
-              <ul className="divide-y divide-line">
-                {items.map((meeting) => (
-                  <UpcomingMeetingItem
-                    key={meeting.id}
-                    meeting={meeting}
-                    onStart={onStart}
-                    starting={startingCode === meeting.meeting_code}
-                  />
-                ))}
-              </ul>
-            </div>
-          ))}
+        <div className="max-h-[440px] overflow-y-auto">
+          <UpcomingMeetingList meetings={meetings} startingCode={startingCode} onStart={onStart} onDelete={onDelete} />
         </div>
       )}
     </section>
