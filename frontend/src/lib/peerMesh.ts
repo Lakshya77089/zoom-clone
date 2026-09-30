@@ -17,6 +17,15 @@ interface Peer {
   pc: RTCPeerConnection;
   stream: MediaStream;
   pendingCandidates: RTCIceCandidateInit[];
+  remoteSession: string | null;
+}
+
+function createSessionId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function toDescription(payload: Record<string, unknown>): RTCSessionDescriptionInit {
+  return { type: payload.type as RTCSdpType, sdp: payload.sdp as string };
 }
 
 export class PeerMesh {
@@ -25,6 +34,7 @@ export class PeerMesh {
   private connected = new Set<number>();
   private failures = new Map<number, number>();
   private greeted = false;
+  private readonly session = createSessionId();
   private localStream: MediaStream | null = null;
   private cursor = 0;
   private pollTimer: number | undefined;
@@ -71,7 +81,7 @@ export class PeerMesh {
     if (!this.greeted) {
       this.greeted = true;
       for (const id of this.wanted) {
-        if (!this.isCaller(id)) void this.send(id, "hello").catch(() => undefined);
+        if (!this.isCaller(id)) void this.send(id, "hello", { session: this.session }).catch(() => undefined);
       }
     }
   }
@@ -96,8 +106,12 @@ export class PeerMesh {
     const peerId = signal.sender_id;
     if (signal.kind === "hello" || signal.kind === "offer") this.wanted.add(peerId);
 
+    const remoteSession = typeof signal.payload.session === "string" ? signal.payload.session : null;
+
     if (signal.kind === "hello") {
-      if (this.isCaller(peerId)) {
+      const current = this.peers.get(peerId);
+      const stale = !current || (current.remoteSession !== null && current.remoteSession !== remoteSession);
+      if (this.isCaller(peerId) && stale) {
         this.closePeer(peerId);
         await this.call(peerId);
       }
@@ -106,12 +120,14 @@ export class PeerMesh {
 
     if (signal.kind === "offer") {
       this.abandon(peerId);
-      const { pc } = this.createPeer(peerId);
+      const peer = this.createPeer(peerId);
+      peer.remoteSession = remoteSession;
+      const { pc } = peer;
       this.emit();
-      await pc.setRemoteDescription(signal.payload as unknown as RTCSessionDescriptionInit);
+      await pc.setRemoteDescription(toDescription(signal.payload));
       this.attachLocalTracks(pc);
       await pc.setLocalDescription(await pc.createAnswer());
-      await this.send(peerId, "answer", pc.localDescription?.toJSON());
+      await this.send(peerId, "answer", this.withSession(pc.localDescription));
       await this.flushCandidates(peerId);
       return;
     }
@@ -121,7 +137,8 @@ export class PeerMesh {
 
     if (signal.kind === "answer") {
       if (peer.pc.signalingState !== "have-local-offer") return;
-      await peer.pc.setRemoteDescription(signal.payload as unknown as RTCSessionDescriptionInit);
+      peer.remoteSession = remoteSession;
+      await peer.pc.setRemoteDescription(toDescription(signal.payload));
       await this.flushCandidates(peerId);
       return;
     }
@@ -137,7 +154,7 @@ export class PeerMesh {
     for (const kind of MEDIA_KINDS) pc.addTransceiver(kind, { direction: "sendrecv" });
     this.attachLocalTracks(pc);
     await pc.setLocalDescription(await pc.createOffer());
-    await this.send(peerId, "offer", pc.localDescription?.toJSON()).catch(() => undefined);
+    await this.send(peerId, "offer", this.withSession(pc.localDescription)).catch(() => undefined);
 
     window.setTimeout(() => {
       if (this.stopped || this.peers.get(peerId)?.pc !== pc || pc.connectionState === "connected") return;
@@ -149,7 +166,7 @@ export class PeerMesh {
 
   private createPeer(peerId: number): Peer {
     const pc = new RTCPeerConnection(this.configuration);
-    const peer: Peer = { pc, stream: new MediaStream(), pendingCandidates: [] };
+    const peer: Peer = { pc, stream: new MediaStream(), pendingCandidates: [], remoteSession: null };
     this.peers.set(peerId, peer);
 
     pc.onicecandidate = (event) => {
@@ -227,6 +244,10 @@ export class PeerMesh {
   private status(peerId: number): PeerStatus {
     if (this.connected.has(peerId)) return "connected";
     return (this.failures.get(peerId) ?? 0) > 0 ? "failed" : "connecting";
+  }
+
+  private withSession(description: RTCSessionDescription | null): object {
+    return { ...description?.toJSON(), session: this.session };
   }
 
   private send(peerId: number, kind: SignalKind, payload: object = {}) {
