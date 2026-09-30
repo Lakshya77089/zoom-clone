@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { openDashboard, startInstantViaApi } from "./support";
+import { endViaApi, openDashboard, startInstantViaApi } from "./support";
 
 const UNKNOWN_CODE = "99999999999";
 
@@ -94,5 +94,26 @@ test.describe("Invite link and /join page", () => {
     await page.getByTestId("join-submit").click();
     await expect(page).toHaveURL(new RegExp(`/j/${meeting.meeting_code}$`));
     await expect(page.getByTestId("display-name-input")).toBeVisible();
+  });
+
+  test("an ended meeting cannot be joined from the dialog, /join or the invite link", async ({ page, request }) => {
+    const session = await startInstantViaApi(request);
+    await endViaApi(request, session);
+    const code = session.meeting.meeting_code;
+
+    await page.goto("/join");
+    await page.getByTestId("meeting-id-input").fill(code);
+    await page.getByTestId("join-submit").click();
+    await expect(page.getByTestId("field-error")).toHaveText("This meeting has ended.");
+
+    await page.goto(`/j/${code}`);
+    await expect(page.getByTestId("prejoin-error")).toContainText("This meeting has ended.");
+
+    await openDashboard(page);
+    await page.getByTestId("join-meeting-button").click();
+    await page.getByTestId("meeting-id-input").fill(code);
+    await page.getByTestId("display-name-input").fill("Late Guest");
+    await page.getByTestId("join-submit").click();
+    await expect(page.getByTestId("field-error")).toHaveText("This meeting has ended.");
   });
 });
