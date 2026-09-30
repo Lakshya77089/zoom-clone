@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p cypress",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:cypress": "node scripts/with-test-servers.mjs cypress run",
+    "test:cypress:open": "node scripts/with-test-servers.mjs cypress open",
+    "test": "npm run test:e2e && npm run test:cypress"
   },
   "dependencies": {
     "lucide-react": "^1.48.0",
@@ -15,10 +21,12 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cypress": "^15.21.1",
     "eslint": "^9",
     "eslint-config-next": "16.3.7",
     "tailwindcss": "^4",
