@@ -2,6 +2,9 @@
 
 A video conferencing web app modeled on the Zoom web client. You can start instant meetings, join by meeting ID or invite link, schedule meetings for later, and manage participants from inside the meeting room.
 
+- **Live app:** https://lakshya-zoom.eastasia.cloudapp.azure.com
+- **Repository:** https://github.com/Lakshya77089/zoom-clone
+
 ## Tech Stack
 
 | Layer    | Tech                                              |
@@ -12,22 +15,22 @@ A video conferencing web app modeled on the Zoom web client. You can start insta
 
 ## Features
 
-- **Dashboard**: Zoom Workplace style shell with a header (meeting search with `Ctrl+K`, settings, profile menu), a left navigation rail (a bottom tab bar on mobile), New meeting / Join / Schedule actions, a live clock, upcoming meetings grouped by day, and recent meetings. Each meeting card shows the time, duration and meeting ID, a Start / Join button, and a menu to copy the invitation, invite link or meeting ID, or delete a scheduled meeting.
-- **Meetings page**: Upcoming and Previous tabs with search by topic or meeting ID.
-- **Settings page**: profile placeholder for the seeded user and meeting preferences (join muted, join with video off, show invite details when starting a meeting), stored in the browser.
+- **Dashboard**: Zoom Workplace style shell with a header (meeting search with `Ctrl+K`, profile menu) and a left navigation rail (Home, Meetings, Settings), plus New meeting / Join / Schedule actions, a live clock, upcoming meetings grouped by day, and recent meetings. Each meeting card shows the time, duration and meeting ID, a Start / Join button, and a menu to copy the invitation, invite link or meeting ID, or delete a scheduled meeting.
+- **Meetings page**: Upcoming and Previous tabs with search by topic or meeting ID, and a detail panel with Start / Join, Copy Invitation, Delete, the invite link and the full invitation text.
+- **Settings page**: Zoom-style settings with General, Audio, Video and My account sections. The preferences (join muted, join with video off, show invite details when starting a meeting) are stored in the browser, and My account is the profile placeholder for the seeded user. The Join dialog and pre-join screen can also remember your display name.
 - **Instant meeting**: generates a unique 11-digit meeting ID and a shareable invite link (`/j/<meeting id>`), then takes the host straight into the room.
 - **Join meeting**: accepts a meeting ID (with or without spaces) or a full invite link, from the Join dialog or the standalone `/join` page. You enter a display name first, and the meeting's existence is checked before joining. Each field shows its own error (invalid ID, meeting not found, meeting ended, missing name). Invite links open a pre-join screen with a camera and mic preview.
 - **Schedule meeting**: topic, description, date and time pickers, and duration. The meeting ID and link are generated automatically, the meeting is stored in SQLite, and it appears under Upcoming meetings. After saving you can copy the invitation.
 - **Meeting room**: live video and audio between all participants over WebRTC, mute and video toggles, participant grid, participants panel, a More menu (copy invite link, invitation or meeting ID, and mute all for the host), meeting info with a copy-link button, and leave / end meeting.
 - **Host controls**: mute all, remove a participant, and end the meeting for everyone. If the host leaves, host is passed to the next participant.
-- **Responsive**: works on mobile, tablet and desktop.
+- **Responsive**: works on mobile, tablet and desktop. Dialogs fit the screen, and the meeting toolbar keeps Audio, Video, Participants, More and End/Leave on small phones.
 
 ## Project Structure
 
 ```
 backend/
   app/
-    core/          config, database session, dependencies, error handlers
+    core/          config, database session, dependencies, error handlers, startup migrations
     models/        SQLAlchemy models (User, Meeting, Participant)
     schemas/       Pydantic request/response models
     controllers/   business logic
@@ -65,7 +68,7 @@ meetings
 
 participants
   id PK, meeting_id FK -> meetings.id (CASCADE), user_id FK -> users.id (SET NULL, nullable for guests),
-  display_name, role (host | attendee), status (active | left | removed),
+  display_name, session_token, role (host | attendee), status (active | left | removed),
   is_muted, is_video_on, joined_at, left_at
   INDEX (meeting_id, status)
 
@@ -108,7 +111,7 @@ Base URL: `/api`. Interactive docs are at `/docs` once the backend is running.
 | GET    | `/meetings/{code}/signals?after={id}` | Get signals addressed to you, acknowledging everything up to `after` |
 | GET    | `/rtc/ice-servers` | STUN/TURN servers and ICE policy for the browser |
 
-In-room actions identify the caller with the `X-Participant-Id` header. The ID comes from the join/start response and is kept in the browser's `sessionStorage`.
+In-room actions identify the caller with two headers, `X-Participant-Id` and `X-Participant-Token`. Both come from the join/start response and are kept in the browser's `sessionStorage`. The token is a random secret that is only returned to the person who joined, so nobody can act as another participant (for example the host) by guessing their id. A wrong or missing token is rejected with 403/422. Databases created before the token existed get the column added on startup.
 
 ## Setup
 
@@ -217,6 +220,6 @@ One-time server setup: create `~/apps/zoom-clone/backend/.env` (`DATABASE_URL`, 
 - Each remote tile shows "Connecting..." until media is actually flowing, and "Can't connect" if the two networks can't reach each other.
 - Participant list, mute/video status and host actions sync through the API, which the room polls every 2 seconds. Mute and video off disable the local tracks, so muted audio is silent for everyone.
 - A meeting ends when the host ends it for everyone, or when the last participant leaves. Ended meetings can't be joined again and show up under Recent meetings.
-- Features not in the assignment (chat, screen share, recording, reactions) are left out rather than shown as buttons that do nothing.
-- Zoom's own typeface is proprietary, so the UI uses Inter.
+- Features outside the assignment (chat, reactions, screen share, recording, apps, calendar integration, recordings/summaries/notes, and the extra schedule options such as recurrence, passcode and waiting room) are shown only as disabled placeholders so the layout matches Zoom. They are visibly greyed out, have a "not allowed" cursor, and do nothing.
+- Zoom's own typeface is proprietary, so the UI uses the system font stack.
 - Scheduled meetings must start in the future and last between 15 minutes and 24 hours.

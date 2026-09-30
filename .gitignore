@@ -29,3 +29,8 @@ Thumbs.db
 .idea/
 
 docs/
+*.log
+*.bak
+*.db-wal
+*.db-shm
+MyNotes-mobileimg.webp
