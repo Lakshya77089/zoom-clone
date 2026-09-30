@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import type { IllustrationComponent } from "@/components/icons";
+import type { IconComponent } from "@/components/icons";
 
 interface EmptyStateProps {
-  illustration: IllustrationComponent;
+  illustration: IconComponent;
   title: string;
   description?: string;
   action?: ReactNode;

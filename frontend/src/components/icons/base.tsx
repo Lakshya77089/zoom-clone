@@ -1,9 +1,8 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useId, type CSSProperties, type ReactNode } from "react";
 
 export interface IconProps {
   size?: number;
   className?: string;
-  strokeWidth?: number;
   style?: CSSProperties;
   "aria-label"?: string;
   "aria-hidden"?: boolean;
@@ -12,31 +11,18 @@ export interface IconProps {
 export type IconComponent = (props: IconProps) => ReactNode;
 
 interface SvgProps extends IconProps {
+  viewBox: string;
+  ratio?: number;
   children: ReactNode;
-  viewBox?: string;
 }
 
-export const ZOOM_STROKE = 1.2;
-
-export function Svg({
-  size = 16,
-  className,
-  strokeWidth = ZOOM_STROKE,
-  style,
-  children,
-  viewBox = "0 0 16 16",
-  "aria-label": label,
-}: SvgProps) {
+export function Svg({ size = 16, ratio = 1, viewBox, className, style, children, "aria-label": label }: SvgProps) {
   return (
     <svg
-      width={size}
+      width={Math.round(size * ratio * 100) / 100}
       height={size}
       viewBox={viewBox}
       fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
       className={className}
       style={style}
       role={label ? "img" : undefined}
@@ -49,12 +35,6 @@ export function Svg({
   );
 }
 
-export function icon(render: (props: IconProps) => ReactNode, displayName: string, defaultStrokeWidth = ZOOM_STROKE): IconComponent {
-  const Component = (props: IconProps) => (
-    <Svg strokeWidth={defaultStrokeWidth} {...props}>
-      {render(props)}
-    </Svg>
-  );
-  Component.displayName = displayName;
-  return Component;
+export function useIconId() {
+  return `zi${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
 }

@@ -9,7 +9,7 @@ A video conferencing web app modeled on the Zoom web client. You can start insta
 
 | Layer    | Tech                                              |
 | -------- | ------------------------------------------------- |
-| Frontend | Next.js 16 (App Router, TypeScript), Tailwind CSS 4, lucide-react |
+| Frontend | Next.js 16 (App Router, TypeScript), Tailwind CSS 4 |
 | Backend  | Python 3.10+, FastAPI, SQLAlchemy 2, Pydantic 2   |
 | Database | SQLite                                            |
 
@@ -430,7 +430,7 @@ One-time server setup: create `~/apps/zoom-clone/backend/.env` (`DATABASE_URL`, 
 
 ## Notes
 
-- The UI follows measurements taken from the live Zoom web app (sizes, colours, spacing, font sizes) at 1440×900 and 390×844. Zoom's logo, icons and typeface are proprietary, so the app uses look-alike icons and the system font stack.
+- The UI follows measurements taken from the live Zoom web app (sizes, colours, spacing, font sizes) at 1440×900 and 390×844. Icons, the logo and the empty-state illustrations use the SVG geometry of the real Zoom web client, collected in `frontend/src/components/icons`; the typeface is the system font stack.
 - Audio and video are real WebRTC between browsers and work best with up to about 5 people on video (see [Capacity and limits](#capacity-and-limits)).
 - Google STUN is enough on normal home networks. Campus, office and mobile networks often need a TURN relay, configured with the `TURN_*`, Cloudflare or Metered variables; a `turns:…:443?transport=tcp` url gets through most firewalls.
 - Remote tiles show "Connecting..." until media flows, and "Can't connect" if the two networks can't reach each other. Mute and video off disable the local tracks, so muted audio is silent for everyone.

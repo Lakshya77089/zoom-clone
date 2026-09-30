@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, HistoryIcon, SearchIcon } from "@/components/icons";
+import { BellIcon, ChevronSmallDownIcon, ChevronSmallLeftIcon, ChevronSmallRightIcon, HistoryIcon, SearchIcon } from "@/components/icons";
 import { ProfileMenu } from "@/components/layout/ProfileMenu";
 import { SearchBox } from "@/components/layout/SearchBox";
 import { ZoomLogo } from "@/components/ui/ZoomLogo";
@@ -25,7 +25,7 @@ export function AppHeader() {
 
         <span aria-hidden className={`${lookAlike} ml-9 gap-1 px-2`}>
           Discover Products
-          <ChevronDownIcon size={13} strokeWidth={1.9} />
+          <ChevronSmallDownIcon size={12} />
         </span>
         <span aria-hidden className={`${lookAlike} ml-2 px-2`}>
           Pricing
@@ -34,10 +34,10 @@ export function AppHeader() {
         <div className="hidden min-w-0 flex-1 items-center justify-center gap-1.5 md:flex xl:ml-5 xl:flex-none">
           <div className={`hidden items-center lg:flex ${unavailableClass}`} aria-hidden>
             <span className={`${historyButton} text-ink-disabled`}>
-              <ChevronLeftIcon size={14} />
+              <ChevronSmallLeftIcon size={14} />
             </span>
             <span className={`${historyButton} text-ink-disabled`}>
-              <ChevronRightIcon size={14} />
+              <ChevronSmallRightIcon size={14} />
             </span>
             <span className={`${historyButton} text-[#2a2b2d]`}>
               <HistoryIcon size={14} />

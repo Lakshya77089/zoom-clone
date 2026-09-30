@@ -127,7 +127,7 @@ export function MeetingsView() {
       <div className={`min-h-0 w-full shrink-0 flex-col border-r-2 border-[rgba(125,125,136,0.13)] md:flex md:w-[360px] ${showDetail ? "hidden" : "flex"}`}>
         <div className="flex h-[46px] shrink-0 items-center gap-1 px-3">
           <button type="button" onClick={() => void refresh()} aria-label="Refresh meetings" className={iconButton}>
-            <RefreshIcon size={14} strokeWidth={1.4} />
+            <RefreshIcon size={13} />
           </button>
           <div role="tablist" aria-label="Meeting lists" className="flex flex-1 items-center justify-center gap-5">
             {TABS.map(({ id, label }) => {
@@ -150,7 +150,7 @@ export function MeetingsView() {
             })}
           </div>
           <button type="button" onClick={() => setDialog("schedule")} aria-label="Schedule a meeting" data-testid="meetings-schedule-button" className={iconButton}>
-            <PlusIcon size={16} strokeWidth={1.4} />
+            <PlusIcon size={16} />
           </button>
         </div>
 
@@ -181,7 +181,7 @@ export function MeetingsView() {
 
         <div className="flex h-[35px] shrink-0 items-center justify-center border-t-[0.8px] border-line">
           <span aria-disabled="true" className={`flex items-center gap-1.5 text-sm leading-[14px] text-[#0e72ed] ${unavailableClass}`}>
-            <CalendarPlusIcon size={14} />
+            <CalendarPlusIcon size={13} />
             Add a calendar
           </span>
         </div>

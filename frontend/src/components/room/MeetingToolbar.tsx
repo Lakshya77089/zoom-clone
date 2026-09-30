@@ -1,4 +1,4 @@
-import { AppsIcon, ChatBubbleIcon, ParticipantsIcon, ReactIcon, RecordIcon, ShareScreenIcon } from "@/components/icons";
+import { AppsIcon, ReactIcon, RecordIcon, ShareScreenIcon, ToolbarChatIcon, ToolbarParticipantsIcon } from "@/components/icons";
 import { LeaveMenu } from "@/components/room/LeaveMenu";
 import { MediaIconButton } from "@/components/room/MediaIconButton";
 import { MoreMenu } from "@/components/room/MoreMenu";
@@ -51,13 +51,13 @@ export function MeetingToolbar({
       <div className="flex min-w-0 flex-1 items-center justify-center gap-0.5">
         <ToolbarButton
           label="Participants"
-          icon={ParticipantsIcon}
+          icon={ToolbarParticipantsIcon}
           badge={participantCount}
           active={participantsOpen}
           onClick={onToggleParticipants}
           testId="participants-button"
         />
-        <ToolbarButton label="Chat" icon={ChatBubbleIcon} disabled className="hidden md:flex" />
+        <ToolbarButton label="Chat" icon={ToolbarChatIcon} disabled className="hidden md:flex" />
         <ToolbarButton label="React" icon={ReactIcon} disabled className="hidden md:flex" />
         <ToolbarButton label="Share" icon={ShareScreenIcon} disabled className="hidden md:flex" />
         <ToolbarButton label="Record" icon={RecordIcon} disabled className="hidden lg:flex" />

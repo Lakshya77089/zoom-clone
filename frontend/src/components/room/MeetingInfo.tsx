@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, CopyIcon, EncryptionShieldIcon } from "@/components/icons";
+import { CheckIcon, CopyIcon, MeetingInfoIcon } from "@/components/icons";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useDismissible } from "@/hooks/useDismissible";
 import { formatMeetingCode } from "@/lib/meetingCode";
@@ -25,7 +25,7 @@ export function MeetingInfo({ meeting, defaultOpen = false }: MeetingInfoProps) 
         data-testid="meeting-info-button"
         className="flex h-7 w-7 items-center justify-center rounded-md text-white/90 outline-none hover:bg-room-hover focus-visible:ring-2 focus-visible:ring-white/60"
       >
-        <EncryptionShieldIcon size={18} />
+        <MeetingInfoIcon size={16} />
       </button>
 
       {open && (

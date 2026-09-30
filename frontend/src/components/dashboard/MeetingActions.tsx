@@ -18,7 +18,7 @@ export function MeetingActions({ creating, onNewMeeting, onJoin, onSchedule }: M
         onClick={onNewMeeting}
         busy={creating}
         testId="new-meeting-button"
-        trailing={<ChevronDownIcon size={13} className="text-ink-faint" aria-hidden />}
+        trailing={<ChevronDownIcon size={13} className="text-ink-faint" />}
       />
       <ActionTile label="Join" icon={JoinTileIcon} tone="blue" onClick={onJoin} testId="join-meeting-button" />
       <ActionTile label="Schedule" icon={ScheduleTileIcon} tone="blue" onClick={onSchedule} testId="schedule-meeting-button" />

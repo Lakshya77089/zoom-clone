@@ -1,6 +1,6 @@
 "use client";
 
-import { LinkIcon, MailIcon, MeetingIdIcon, MicOffIcon, MoreIcon } from "@/components/icons";
+import { LinkIcon, MailIcon, MeetingIdIcon, MicOffIcon, ToolbarMoreIcon } from "@/components/icons";
 import { ToolbarButton } from "@/components/room/ToolbarButton";
 import { Menu, type MenuItem } from "@/components/ui/Menu";
 
@@ -28,7 +28,7 @@ export function MoreMenu({ isHost, onCopyLink, onCopyInvitation, onCopyMeetingId
       placement="top"
       align="center"
       renderTrigger={({ open, toggle }) => (
-        <ToolbarButton label="More" icon={MoreIcon} onClick={toggle} active={open} expanded={open} testId="more-button" />
+        <ToolbarButton label="More" icon={ToolbarMoreIcon} onClick={toggle} active={open} expanded={open} testId="more-button" />
       )}
     />
   );

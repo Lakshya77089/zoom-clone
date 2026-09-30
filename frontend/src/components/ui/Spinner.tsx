@@ -6,5 +6,5 @@ interface SpinnerProps {
 }
 
 export function Spinner({ size = 20, className = "" }: SpinnerProps) {
-  return <SpinnerIcon size={size} strokeWidth={1.6} className={`animate-spin ${className}`} />;
+  return <SpinnerIcon size={size} className={`animate-spin ${className}`} />;
 }

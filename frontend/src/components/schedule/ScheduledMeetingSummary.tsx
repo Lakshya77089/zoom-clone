@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheckIcon, CheckIcon, CopyIcon, LinkIcon } from "@/components/icons";
+import { CalendarEventIcon, CheckIcon, CopyIcon, LinkIcon } from "@/components/icons";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { formatDuration, formatGroupLabel, formatTimeRange } from "@/lib/format";
 import { formatMeetingCode } from "@/lib/meetingCode";
@@ -27,7 +27,7 @@ export function ScheduledMeetingSummary({ meeting }: ScheduledMeetingSummaryProp
   return (
     <div data-testid="scheduled-summary">
       <div className="mb-5 flex items-center gap-3 rounded-xl bg-zoom-green/10 px-4 py-3 text-sm font-medium text-zoom-green-dark">
-        <CalendarCheckIcon size={20} className="shrink-0" />
+        <CalendarEventIcon size={20} className="shrink-0" />
         Your meeting has been scheduled and added to Upcoming.
       </div>
       <dl className="grid grid-cols-[96px_1fr] gap-x-4 gap-y-3 text-sm">

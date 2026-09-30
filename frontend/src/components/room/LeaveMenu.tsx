@@ -1,5 +1,7 @@
 "use client";
 
+import { EndMeetingIcon, LeaveMeetingIcon } from "@/components/icons";
+import { toolbarItem } from "@/components/room/ToolbarButton";
 import { useDismissible } from "@/hooks/useDismissible";
 
 interface LeaveMenuProps {
@@ -10,6 +12,7 @@ interface LeaveMenuProps {
 
 export function LeaveMenu({ isHost, onLeave, onEndForAll }: LeaveMenuProps) {
   const { open, setOpen, ref } = useDismissible();
+  const Icon = isHost ? EndMeetingIcon : LeaveMeetingIcon;
 
   return (
     <div className="relative pr-2" ref={ref}>
@@ -19,9 +22,12 @@ export function LeaveMenu({ isHost, onLeave, onEndForAll }: LeaveMenuProps) {
         aria-expanded={open}
         aria-haspopup="menu"
         data-testid="leave-meeting"
-        className="h-8 rounded-lg bg-zoom-red px-4 text-sm font-semibold text-white outline-none transition-colors hover:bg-zoom-red-dark focus-visible:ring-2 focus-visible:ring-white/60"
+        className={`${toolbarItem} hover:bg-white/10 ${open ? "bg-white/10" : ""}`}
       >
-        {isHost ? "End" : "Leave"}
+        <span className="flex h-6 items-center">
+          <Icon size={24} />
+        </span>
+        <span className="whitespace-nowrap text-xs leading-4 text-white">{isHost ? "End" : "Leave"}</span>
       </button>
 
       {open && (

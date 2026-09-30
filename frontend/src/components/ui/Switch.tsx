@@ -22,7 +22,7 @@ export function Switch({ id, label, description, checked, onChange }: SwitchProp
           checked ? "border-zoom-tile bg-zoom-tile text-white" : "border-outline bg-white"
         }`}
       >
-        {checked && <CheckIcon size={12} strokeWidth={2} />}
+        {checked && <CheckIcon size={12} />}
       </button>
       <div className="min-w-0 pl-1.5">
         <label id={`${id}-label`} htmlFor={id} className="block cursor-pointer text-sm leading-[18px] text-[#2a2b2d]">

@@ -70,18 +70,18 @@ export function MeetingDetail({ meeting, variant, starting, onStart, onDelete, o
           <span className="inline-flex h-8 items-center text-sm text-ink-muted">Ended</span>
         )}
         <button type="button" className={outline} onClick={() => void copy(buildInvitation(meeting), "Invitation copied to clipboard")}>
-          <CopyIcon size={14} strokeWidth={1.5} />
+          <CopyIcon size={12} />
           Copy Invitation
         </button>
         {variant === "upcoming" && (
           <span aria-disabled="true" className={`${outline} ${unavailableClass}`}>
-            <EditIcon size={14} strokeWidth={1.5} />
+            <EditIcon size={12} />
             Edit
           </span>
         )}
         {variant === "upcoming" && !isLive && (
           <button type="button" className={outline} onClick={() => onDelete(meeting)} data-testid="detail-delete-button">
-            <TrashIcon size={14} strokeWidth={1.5} />
+            <TrashIcon size={12} />
             Delete
           </button>
         )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, MoreIcon } from "@/components/icons";
+import { CalendarIcon, MoreIcon, NextIcon, PreviousIcon } from "@/components/icons";
 import { Menu, type MenuItem } from "@/components/ui/Menu";
 import type { DayCursor } from "@/hooks/useDayCursor";
 import { formatShortDate } from "@/lib/format";
@@ -31,10 +31,10 @@ export function DayNavigator({ cursor, menuItems }: DayNavigatorProps) {
         Today
       </button>
       <button type="button" onClick={goPrevious} disabled={isToday} aria-label="Previous day" data-testid="calendar-prev" className={roundButton}>
-        <ChevronLeftIcon size={14} />
+        <PreviousIcon size={14} />
       </button>
       <button type="button" onClick={goNext} aria-label="Next day" data-testid="calendar-next" className={roundButton}>
-        <ChevronRightIcon size={14} />
+        <NextIcon size={14} />
       </button>
       <span className="truncate text-xs font-semibold leading-4 text-ink" aria-live="polite" data-testid="calendar-date" suppressHydrationWarning>
         {selected ? formatShortDate(selected) : ""}

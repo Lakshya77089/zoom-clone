@@ -1,4 +1,14 @@
-import { ChevronUpIcon, MicIcon, MicOffIcon, VideoIcon, VideoOffIcon } from "@/components/icons";
+import {
+  ChevronUpIcon,
+  MicIcon,
+  MicOffIcon,
+  ToolbarMicIcon,
+  ToolbarMicOffIcon,
+  ToolbarVideoIcon,
+  ToolbarVideoOffIcon,
+  VideoIcon,
+  VideoOffIcon,
+} from "@/components/icons";
 
 interface MediaIconButtonProps {
   kind: "audio" | "video";
@@ -14,6 +24,7 @@ const labels = {
 
 export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }: MediaIconButtonProps) {
   const Icon = kind === "audio" ? (enabled ? MicIcon : MicOffIcon) : enabled ? VideoIcon : VideoOffIcon;
+  const ToolbarIcon = kind === "audio" ? (enabled ? ToolbarMicIcon : ToolbarMicOffIcon) : enabled ? ToolbarVideoIcon : ToolbarVideoOffIcon;
   const label = enabled ? labels[kind].on : labels[kind].off;
   const testId = kind === "audio" ? "toggle-audio" : "toggle-video";
 
@@ -44,15 +55,15 @@ export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }
         aria-pressed={!enabled}
         data-testid={testId}
         data-state={enabled ? "on" : "off"}
-        className="flex h-14 min-w-[56px] flex-col items-center justify-center gap-1 rounded-l-lg px-2 text-white outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/60 sm:min-w-[64px]"
+        className="flex h-14 min-w-[56px] flex-col items-center justify-center gap-1 rounded-l-lg px-2 text-white outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/60 sm:min-w-[64px] lg:min-w-[70px]"
       >
         <span className="flex h-6 items-center">
-          <Icon size={22} strokeWidth={1.3} />
+          <ToolbarIcon size={24} />
         </span>
-        <span className="whitespace-nowrap text-xs leading-4 text-white/90">{kind === "audio" ? "Audio" : "Video"}</span>
+        <span className="whitespace-nowrap text-xs leading-4 text-white">{kind === "audio" ? "Audio" : "Video"}</span>
       </button>
       <span aria-hidden className="hidden h-14 items-start rounded-r-lg pr-1 pt-2 text-white/80 sm:flex">
-        <ChevronUpIcon size={12} strokeWidth={1.8} />
+        <ChevronUpIcon size={12} />
       </span>
     </div>
   );

@@ -1,4 +1,4 @@
-import { ChatIcon, ContactsIcon, HomeIcon, SettingsIcon, VideoIcon, type IconComponent } from "@/components/icons";
+import { ChatIcon, ContactsIcon, HomeIcon, MeetingsIcon, SettingsIcon, type IconComponent } from "@/components/icons";
 
 export const ROUTES = {
   home: "/",
@@ -18,7 +18,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: ROUTES.home, icon: HomeIcon },
   { label: "Chat", icon: ChatIcon },
-  { label: "Meetings", href: ROUTES.meetings, icon: VideoIcon },
+  { label: "Meetings", href: ROUTES.meetings, icon: MeetingsIcon },
   { label: "Contacts", icon: ContactsIcon },
 ];
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CloseIcon, MicIcon, MicOffIcon, MoreIcon, SearchIcon, VideoIcon, VideoOffIcon } from "@/components/icons";
+import { CloseIcon, MicIcon, MoreIcon, ParticipantMutedIcon, ParticipantVideoOffIcon, SearchIcon, VideoIcon } from "@/components/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import type { Participant } from "@/types";
@@ -92,14 +92,14 @@ export function ParticipantsPanel({
                 </button>
               )}
               {participant.is_muted ? (
-                <MicOffIcon size={16} className="text-zoom-red" aria-label="Muted" />
+                <ParticipantMutedIcon size={16} aria-label="Muted" />
               ) : (
                 <MicIcon size={16} className="text-ink-muted" aria-label="Unmuted" />
               )}
               {participant.is_video_on ? (
                 <VideoIcon size={16} className="text-ink-muted" aria-label="Video on" />
               ) : (
-                <VideoOffIcon size={16} className="text-zoom-red" aria-label="Video off" />
+                <ParticipantVideoOffIcon size={16} aria-label="Video off" />
               )}
             </li>
           );

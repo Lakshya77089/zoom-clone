@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ChevronDownIcon, ExternalLinkIcon, InfoIcon } from "@/components/icons";
+import { CaretDownIcon, ExternalLinkIcon, InfoIcon } from "@/components/icons";
 import { MeetingCard } from "@/components/meetings/MeetingCard";
 import { formatGroupLabel } from "@/lib/format";
 import type { Meeting } from "@/types";
@@ -112,7 +112,7 @@ export function CalendarCard({ title, headingId, viewAllHref, children, testId, 
       <div className="relative flex h-11 items-center justify-center px-10">
         <h2 id={headingId} className={`flex items-center gap-1 text-sm font-bold leading-[18px] text-ink ${unavailableClass}`}>
           {title}
-          <ChevronDownIcon size={14} strokeWidth={1.8} />
+          <CaretDownIcon size={14} />
         </h2>
         {viewAllHref && (
           <Link href={viewAllHref} aria-label={`Open ${title.toLowerCase()}`} className={`${roundIcon} absolute right-4 hover:bg-canvas`}>
