@@ -1,3 +1,5 @@
+import { Check } from "lucide-react";
+
 interface SwitchProps {
   id: string;
   label: string;
@@ -8,27 +10,26 @@ interface SwitchProps {
 
 export function Switch({ id, label, description, checked, onChange }: SwitchProps) {
   return (
-    <div className="flex items-start justify-between gap-6 py-4">
-      <div className="min-w-0">
-        <label htmlFor={id} className="block cursor-pointer text-sm font-medium text-ink">
-          {label}
-        </label>
-        {description && <p className="mt-0.5 text-[13px] text-ink-muted">{description}</p>}
-      </div>
+    <div className="flex items-start gap-1.5 py-1.5">
       <button
         id={id}
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-labelledby={`${id}-label`}
         onClick={() => onChange(!checked)}
-        className={`relative mt-0.5 h-6 w-10 shrink-0 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-zoom-blue focus-visible:ring-offset-2 ${
-          checked ? "bg-zoom-blue" : "bg-line-strong"
+        className={`mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded border-[0.8px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zoom-blue/40 ${
+          checked ? "border-zoom-tile bg-zoom-tile text-white" : "border-outline bg-white"
         }`}
       >
-        <span
-          className={`absolute left-0 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? "translate-x-[18px]" : "translate-x-0.5"}`}
-        />
+        {checked && <Check size={12} strokeWidth={3} />}
       </button>
+      <div className="min-w-0 pl-1.5">
+        <label id={`${id}-label`} htmlFor={id} className="block cursor-pointer text-sm leading-[18px] text-[#2a2b2d]">
+          {label}
+        </label>
+        {description && <p className="mt-1 text-xs leading-4 text-ink-muted">{description}</p>}
+      </div>
     </div>
   );
 }

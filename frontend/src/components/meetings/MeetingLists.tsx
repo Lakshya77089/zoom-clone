@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, SquareArrowOutUpRight } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Info, MoreHorizontal, SquareArrowOutUpRight } from "lucide-react";
 import { MeetingCard } from "@/components/meetings/MeetingCard";
 import { formatGroupLabel } from "@/lib/format";
 import type { Meeting } from "@/types";
@@ -91,13 +91,22 @@ interface CalendarCardProps {
   viewAllHref?: string;
   children: ReactNode;
   testId?: string;
+  notice?: boolean;
 }
 
 const roundIcon = "flex h-6 w-6 items-center justify-center rounded-full text-ink-soft";
 
-export function CalendarCard({ title, headingId, viewAllHref, children, testId }: CalendarCardProps) {
+export function CalendarCard({ title, headingId, viewAllHref, children, testId, notice = false }: CalendarCardProps) {
   return (
     <section className="overflow-hidden rounded-lg border-[0.8px] border-line-soft bg-white" aria-labelledby={headingId} data-testid={testId}>
+      {notice && (
+        <div className="m-2 flex items-start gap-3 rounded-xl border-[0.8px] border-[#a8ccf8] bg-[#f2f8ff] p-4 text-sm leading-[18px] text-ink">
+          <Info size={20} strokeWidth={1.75} className="shrink-0 text-[#3b90f7]" />
+          <p>
+            You haven&apos;t connected your calendar yet. <span className="text-zoom-blue">Connect now</span> to manage all your meetings and events in one place.
+          </p>
+        </div>
+      )}
       <div className="relative flex h-11 items-center justify-center px-10">
         <h2 id={headingId} className="flex items-center gap-1 text-sm font-bold leading-[18px] text-ink">
           {title}

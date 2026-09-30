@@ -2,16 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarPlus, History, Plus, Search, SearchX } from "lucide-react";
+import { CalendarPlus, Plus, RotateCw, Search } from "lucide-react";
 import { MeetingDialogs, type ActiveDialog } from "@/components/dashboard/MeetingDialogs";
-import { MeetingListSkeleton, RecentMeetingList, UpcomingMeetingList } from "@/components/meetings/MeetingLists";
-import { Button } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { MeetingDetail } from "@/components/meetings/MeetingDetail";
+import { MeetingListItem } from "@/components/meetings/MeetingListItem";
+import { MeetingListSkeleton } from "@/components/meetings/MeetingLists";
 import { FormAlert } from "@/components/ui/field";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useMeetingDeletion } from "@/hooks/useMeetingDeletion";
 import { useMeetingLauncher } from "@/hooks/useMeetingLauncher";
+import { formatGroupLabel } from "@/lib/format";
 import type { Meeting } from "@/types";
 
 type Tab = "upcoming" | "previous";
@@ -27,6 +28,25 @@ function matches(meeting: Meeting, query: string): boolean {
   const looksLikeId = /^[\d\s-]+$/.test(needle);
   return meeting.title.toLowerCase().includes(needle) || (looksLikeId && meeting.meeting_code.includes(needle.replace(/\D/g, "")));
 }
+
+function groupByDay(meetings: Meeting[]): [string, Meeting[]][] {
+  const groups = new Map<string, Meeting[]>();
+  for (const meeting of meetings) {
+    const label = formatGroupLabel(meeting.scheduled_start ?? meeting.started_at ?? meeting.created_at);
+    groups.set(label, [...(groups.get(label) ?? []), meeting]);
+  }
+  return [...groups.entries()];
+}
+
+function ListMessage({ text, testId }: { text: string; testId: string }) {
+  return (
+    <p className="flex min-h-[240px] flex-1 items-center justify-center px-6 text-center text-sm leading-[14px] text-ink-faint" data-testid={testId}>
+      {text}
+    </p>
+  );
+}
+
+const iconButton = "flex h-7 w-7 items-center justify-center rounded-md text-ink outline-none hover:bg-canvas focus-visible:ring-2 focus-visible:ring-zoom-blue";
 
 export function MeetingsView() {
   const router = useRouter();
@@ -46,94 +66,96 @@ export function MeetingsView() {
   const launcher = useMeetingLauncher(refresh);
   const deletion = useMeetingDeletion(refresh);
   const [dialog, setDialog] = useState<ActiveDialog>(null);
+  const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
 
   const selectTab = (next: Tab) => {
     const nextParams = new URLSearchParams(paramQuery ? { q: paramQuery } : {});
     if (next !== "upcoming") nextParams.set("tab", next);
     const search = nextParams.toString();
+    setSelectedCode(null);
+    setShowDetail(false);
     router.replace(search ? `${pathname}?${search}` : pathname, { scroll: false });
   };
 
+  const variant = tab === "upcoming" ? "upcoming" : "recent";
   const source = tab === "upcoming" ? upcoming : recent;
   const filtered = useMemo(() => source.filter((meeting) => matches(meeting, query)), [source, query]);
-  const onStart = (meeting: Meeting) => void launcher.startMeeting(meeting);
+  const selected = filtered.find((meeting) => meeting.meeting_code === selectedCode) ?? filtered[0] ?? null;
+
+  const select = (meeting: Meeting) => {
+    setSelectedCode(meeting.meeting_code);
+    setShowDetail(true);
+  };
 
   const renderList = () => {
     if (loading) return <MeetingListSkeleton rows={4} />;
     if (filtered.length === 0) {
-      if (query.trim()) {
-        return <EmptyState icon={SearchX} title="No matching meetings" description={`Nothing matches "${query.trim()}".`} testId="search-empty" />;
-      }
+      if (query.trim()) return <ListMessage text={`No meetings match "${query.trim()}"`} testId="search-empty" />;
       return tab === "upcoming" ? (
-        <EmptyState
-          icon={CalendarPlus}
-          title="No upcoming meetings"
-          description="Schedule a meeting and it will appear here."
-          testId="upcoming-empty"
-          action={
-            <Button variant="secondary" size="sm" onClick={() => setDialog("schedule")}>
-              Schedule a meeting
-            </Button>
-          }
-        />
+        <ListMessage text="No upcoming meetings" testId="upcoming-empty" />
       ) : (
-        <EmptyState icon={History} title="No previous meetings" description="Meetings you have hosted will appear here." testId="recent-empty" />
+        <ListMessage text="No previous meetings" testId="recent-empty" />
       );
     }
-    return tab === "upcoming" ? (
-      <UpcomingMeetingList meetings={filtered} startingCode={launcher.startingCode} onStart={onStart} onDelete={deletion.requestDelete} />
-    ) : (
-      <RecentMeetingList meetings={filtered} startingCode={launcher.startingCode} onStart={onStart} />
+    return (
+      <div className="px-4 pb-4" data-testid={tab === "upcoming" ? "upcoming-list" : "recent-list"}>
+        {groupByDay(filtered).map(([day, items]) => (
+          <section key={day} aria-label={day}>
+            <h3 className="px-1 pb-1.5 pt-3 text-xs font-semibold leading-4 text-ink-soft">{day}</h3>
+            <ul className="space-y-1">
+              {items.map((meeting) => (
+                <MeetingListItem
+                  key={meeting.id}
+                  meeting={meeting}
+                  variant={variant}
+                  selected={selected?.meeting_code === meeting.meeting_code}
+                  onSelect={select}
+                />
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     );
   };
 
   return (
-    <div className="mx-auto w-full max-w-[960px] px-4 py-6 sm:px-6 lg:py-8" data-testid="meetings-page">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Meetings</h1>
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => setDialog("join")}>
-            Join
-          </Button>
-          <Button onClick={() => setDialog("schedule")} data-testid="meetings-schedule-button">
-            <Plus size={16} />
-            Schedule
-          </Button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="mt-4">
-          <FormAlert>{error}</FormAlert>
-        </div>
-      )}
-
-      <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-white">
-        <div className="flex flex-col gap-3 border-b border-line px-4 pt-3 sm:flex-row sm:items-end sm:justify-between sm:px-5">
-          <div role="tablist" aria-label="Meeting lists" className="flex gap-5">
+    <div className="flex h-full min-h-0" data-testid="meetings-page">
+      <h1 className="sr-only">Meetings</h1>
+      <div className={`min-h-0 w-full shrink-0 flex-col border-r-2 border-[rgba(125,125,136,0.13)] md:flex md:w-[360px] ${showDetail ? "hidden" : "flex"}`}>
+        <div className="flex h-[46px] shrink-0 items-center gap-1 px-3">
+          <button type="button" onClick={() => void refresh()} aria-label="Refresh meetings" className={iconButton}>
+            <RotateCw size={14} strokeWidth={2.25} />
+          </button>
+          <div role="tablist" aria-label="Meeting lists" className="flex flex-1 items-center justify-center gap-5">
             {TABS.map(({ id, label }) => {
-              const selected = tab === id;
-              const count = id === "upcoming" ? upcoming.length : recent.length;
+              const active = tab === id;
               return (
                 <button
                   key={id}
                   type="button"
                   role="tab"
-                  aria-selected={selected}
+                  aria-selected={active}
                   data-testid={`tab-${id}`}
                   onClick={() => selectTab(id)}
-                  className={`-mb-px flex h-10 items-center gap-1.5 border-b-2 text-sm font-semibold transition-colors ${
-                    selected ? "border-zoom-blue text-zoom-blue" : "border-transparent text-ink-muted hover:text-ink"
+                  className={`h-7 text-sm leading-[14px] outline-none transition-colors focus-visible:underline ${
+                    active ? "font-bold text-[#131619]" : "text-ink-muted hover:text-ink"
                   }`}
                 >
                   {label}
-                  {!loading && <span className="rounded-full bg-canvas px-1.5 text-[11px] font-semibold text-ink-muted">{count}</span>}
                 </button>
               );
             })}
           </div>
-          <div className="relative mb-3 sm:w-64">
-            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+          <button type="button" onClick={() => setDialog("schedule")} aria-label="Schedule a meeting" data-testid="meetings-schedule-button" className={iconButton}>
+            <Plus size={16} strokeWidth={2.25} />
+          </button>
+        </div>
+
+        <div className="px-4 pb-1">
+          <label className="relative block">
+            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#3d4349]" />
             <input
               type="search"
               value={query}
@@ -141,11 +163,43 @@ export function MeetingsView() {
               placeholder="Search by topic or meeting ID"
               aria-label="Search meetings"
               data-testid="meetings-search"
-              className="h-9 w-full rounded-[10px] border border-line-strong bg-white pl-9 pr-3 text-sm outline-none placeholder:text-ink-muted focus:border-zoom-blue focus:ring-2 focus:ring-zoom-blue/15"
+              className="h-8 w-full rounded-lg border-[0.8px] border-transparent bg-search pl-8 pr-3 text-sm text-ink outline-none placeholder:text-[#3d4349] focus:border-zoom-blue focus:bg-white"
             />
-          </div>
+          </label>
         </div>
-        <div role="tabpanel">{renderList()}</div>
+
+        {error && (
+          <div className="px-4 pt-3">
+            <FormAlert>{error}</FormAlert>
+          </div>
+        )}
+
+        <div role="tabpanel" className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+          {renderList()}
+        </div>
+
+        <div className="flex h-[35px] shrink-0 items-center justify-center border-t-[0.8px] border-line">
+          <span aria-disabled="true" className="flex items-center gap-1.5 text-sm leading-[14px] text-[#0e72ed]">
+            <CalendarPlus size={14} />
+            Add a calendar
+          </span>
+        </div>
+      </div>
+
+      <div className={`min-h-0 min-w-0 flex-1 overflow-y-auto md:block ${showDetail ? "block" : "hidden"}`}>
+        {selected ? (
+          <MeetingDetail
+            key={selected.meeting_code}
+            meeting={selected}
+            variant={variant}
+            starting={launcher.startingCode === selected.meeting_code}
+            onStart={(meeting) => void launcher.startMeeting(meeting)}
+            onDelete={deletion.requestDelete}
+            onBack={() => setShowDetail(false)}
+          />
+        ) : (
+          !loading && <p className="flex h-full items-center justify-center text-sm text-ink-faint">Select a meeting to see its details</p>
+        )}
       </div>
 
       <MeetingDialogs active={dialog} user={user} onClose={() => setDialog(null)} onScheduled={() => void refresh()} deletion={deletion} />

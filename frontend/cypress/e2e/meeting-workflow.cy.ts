@@ -16,7 +16,7 @@ describe("Scheduled meeting workflow", () => {
     cy.getByTestId("meetings-search").type(title);
     cy.getByTestId("upcoming-meeting").should("have.length", 1).and("contain", title);
 
-    cy.getByTestId("upcoming-meeting").find('[data-testid="meeting-start-button"]').click();
+    cy.getByTestId("meeting-detail").should("contain", title).find('[data-testid="meeting-start-button"]').click();
     cy.getByTestId("meeting-room").should("be.visible");
     cy.getByTestId("room-title").should("have.text", title);
 

@@ -16,7 +16,7 @@ interface UpcomingMeetingsProps {
 
 export function UpcomingMeetings({ meetings, loading, startingCode, onStart, onDelete }: UpcomingMeetingsProps) {
   return (
-    <CalendarCard title="Upcoming meetings" headingId="upcoming-heading" viewAllHref={ROUTES.meetings} testId="upcoming-meetings">
+    <CalendarCard title="Upcoming meetings" headingId="upcoming-heading" viewAllHref={ROUTES.meetings} testId="upcoming-meetings" notice>
       {loading ? (
         <MeetingListSkeleton />
       ) : meetings.length === 0 ? (

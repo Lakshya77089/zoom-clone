@@ -6,7 +6,8 @@ describe("App navigation", () => {
     cy.get("@rail").contains("a", "Meetings").click();
     cy.location("pathname").should("eq", "/meetings");
     cy.get("@rail").contains("a", "Meetings").should("have.attr", "aria-current", "page");
-    cy.contains("h1", "Meetings").should("be.visible");
+    cy.contains("h1", "Meetings").should("exist");
+    cy.getByTestId("tab-upcoming").should("be.visible");
 
     cy.get("@rail").contains("a", "Settings").click();
     cy.location("pathname").should("eq", "/settings");
