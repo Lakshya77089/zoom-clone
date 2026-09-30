@@ -8,7 +8,7 @@ import { TextField } from "@/components/ui/TextField";
 import { MAX_DISPLAY_NAME_LENGTH, MESSAGES } from "@/constants";
 import { api, ApiError } from "@/lib/api";
 import { parseMeetingInput } from "@/lib/meetingCode";
-import type { Preferences } from "@/lib/preferences";
+import { writePreferences, type Preferences } from "@/lib/preferences";
 import type { MeetingSession } from "@/types";
 
 interface JoinMeetingFormProps {
@@ -27,7 +27,8 @@ const NOT_FOUND_STATUSES = new Set([404, 410]);
 
 export function JoinMeetingForm({ defaultName, preferences, onJoined, onCancel }: JoinMeetingFormProps) {
   const [meetingInput, setMeetingInput] = useState("");
-  const [name, setName] = useState(defaultName);
+  const [name, setName] = useState(preferences.rememberedName || defaultName);
+  const [remember, setRemember] = useState(Boolean(preferences.rememberedName));
   const [audioOff, setAudioOff] = useState(preferences.joinMuted);
   const [videoOff, setVideoOff] = useState(preferences.joinVideoOff);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -47,7 +48,9 @@ export function JoinMeetingForm({ defaultName, preferences, onJoined, onCancel }
 
     setSubmitting(true);
     try {
-      onJoined(await api.joinMeeting(code, name.trim(), { is_muted: audioOff, is_video_on: !videoOff }));
+      const session = await api.joinMeeting(code, name.trim(), { is_muted: audioOff, is_video_on: !videoOff });
+      writePreferences({ rememberedName: remember ? name.trim() : "" });
+      onJoined(session);
     } catch (error) {
       if (error instanceof ApiError && NOT_FOUND_STATUSES.has(error.status)) {
         setErrors({ meeting: error.status === 404 ? MESSAGES.meetingNotFound : error.message });
@@ -59,11 +62,10 @@ export function JoinMeetingForm({ defaultName, preferences, onJoined, onCancel }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5" noValidate data-testid="join-meeting-form">
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate data-testid="join-meeting-form">
       <TextField
         id="join-meeting-id"
-        label="Meeting ID or invite link"
-        placeholder="Enter meeting ID or invite link"
+        label="Meeting ID or Personal Link Name"
         value={meetingInput}
         error={errors.meeting}
         onChange={(event) => {
@@ -77,8 +79,7 @@ export function JoinMeetingForm({ defaultName, preferences, onJoined, onCancel }
       />
       <TextField
         id="join-display-name"
-        label="Your name"
-        placeholder="Enter your name"
+        label="Your Name"
         value={name}
         error={errors.name}
         onChange={(event) => {
@@ -89,16 +90,13 @@ export function JoinMeetingForm({ defaultName, preferences, onJoined, onCancel }
         autoComplete="name"
         data-testid="display-name-input"
       />
-      <div className="space-y-3">
+      <div className="space-y-2.5 pt-1">
+        <Checkbox id="join-remember-name" label="Remember my name for future meetings" checked={remember} onChange={setRemember} />
         <Checkbox id="join-audio-off" label="Don't connect to audio" checked={audioOff} onChange={setAudioOff} />
         <Checkbox id="join-video-off" label="Turn off my video" checked={videoOff} onChange={setVideoOff} />
       </div>
       {formError && <FormAlert>{formError}</FormAlert>}
-      <p className="text-[13px] text-ink-muted">
-        By clicking &quot;Join&quot;, you agree to our <span className="text-zoom-blue">Terms of Service</span> and{" "}
-        <span className="text-zoom-blue">Privacy Statement</span>.
-      </p>
-      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      <div className="flex justify-end gap-4 pt-4">
         <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>

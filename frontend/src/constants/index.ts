@@ -1,4 +1,4 @@
-import { CalendarDays, Home, Settings, type LucideIcon } from "lucide-react";
+import { House, MessagesSquare, Settings, SquareUserRound, Video, type LucideIcon } from "lucide-react";
 
 export const ROUTES = {
   home: "/",
@@ -11,13 +11,15 @@ export const ROUTES = {
 
 export interface NavItem {
   label: string;
-  href: string;
+  href?: string;
   icon: LucideIcon;
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Home", href: ROUTES.home, icon: Home },
-  { label: "Meetings", href: ROUTES.meetings, icon: CalendarDays },
+  { label: "Home", href: ROUTES.home, icon: House },
+  { label: "Chat", icon: MessagesSquare },
+  { label: "Meetings", href: ROUTES.meetings, icon: Video },
+  { label: "Contacts", icon: SquareUserRound },
 ];
 
 export const SETTINGS_NAV_ITEM: NavItem = { label: "Settings", href: ROUTES.settings, icon: Settings };

@@ -57,20 +57,20 @@ export function MeetingCard({ meeting, variant, starting, onStart, onDelete }: M
 
   return (
     <li
-      className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-hover/70 sm:gap-4 sm:px-5"
+      className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-[#f7f9fa]"
       data-testid={isUpcoming ? "upcoming-meeting" : "recent-meeting"}
       data-meeting-code={meeting.meeting_code}
     >
       {!isUpcoming && (
-        <span className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zoom-blue-light text-zoom-blue sm:flex">
-          <Video size={19} />
+        <span className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-zoom-blue-light text-zoom-blue sm:flex">
+          <Video size={16} />
         </span>
       )}
 
       <div className="min-w-0 flex-1">
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-ink-muted">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-4 text-ink-soft">
           {isUpcoming && meeting.scheduled_start ? (
-            <span className="font-medium text-ink">{formatTimeRange(meeting.scheduled_start, meeting.scheduled_end)}</span>
+            <span>{formatTimeRange(meeting.scheduled_start, meeting.scheduled_end)}</span>
           ) : (
             <span>
               {formatDayLabel(startedAt)}, {formatTime(startedAt)}
@@ -78,10 +78,10 @@ export function MeetingCard({ meeting, variant, starting, onStart, onDelete }: M
           )}
           {isLive && <LiveBadge />}
         </p>
-        <p className="mt-0.5 truncate text-[15px] font-semibold text-ink" data-testid="meeting-title">
+        <p className="mt-1 truncate text-sm font-bold leading-[18px] text-ink" data-testid="meeting-title">
           {meeting.title}
         </p>
-        <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[13px] text-ink-muted">
+        <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs leading-4 text-ink-muted">
           <span>Meeting ID: {meetingId}</span>
           {duration !== null && (
             <span className="whitespace-nowrap">
@@ -105,7 +105,7 @@ export function MeetingCard({ meeting, variant, starting, onStart, onDelete }: M
             {primaryLabel}
           </Button>
         ) : (
-          <span className="px-2 text-[13px] text-ink-muted">Ended</span>
+          <span className="px-2 text-xs text-ink-muted">Ended</span>
         )}
         <MeetingMoreMenu title={meeting.title} items={menuItems} />
       </div>

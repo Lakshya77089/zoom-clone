@@ -12,7 +12,7 @@ export function TextField({ label, id, error, hint, className = "", ...props }: 
   const messageId = `${id}-message`;
   return (
     <div>
-      <label htmlFor={id} className="mb-2 block text-sm font-medium text-ink">
+      <label htmlFor={id} className="mb-1 block text-sm leading-[18px] text-ink">
         {label}
       </label>
       <input

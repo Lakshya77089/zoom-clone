@@ -1,38 +1,50 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Settings } from "lucide-react";
+import { Bell, ChevronLeft, ChevronRight, Clock3, Search } from "lucide-react";
 import { ProfileMenu } from "@/components/layout/ProfileMenu";
 import { SearchBox } from "@/components/layout/SearchBox";
 import { ZoomLogo } from "@/components/ui/ZoomLogo";
 import { ROUTES } from "@/constants";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-const iconButton =
-  "flex h-9 w-9 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-hover hover:text-ink outline-none focus-visible:ring-2 focus-visible:ring-zoom-blue";
+const historyButton = "flex h-6 w-6 items-center justify-center rounded-md";
 
 export function AppHeader() {
   const user = useCurrentUser();
 
   return (
-    <header className="sticky top-0 z-40 h-14 shrink-0 border-b border-line bg-white">
-      <div className="flex h-full items-center gap-3 px-4 md:px-5">
-        <Link href={ROUTES.home} className="flex items-baseline gap-1.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-zoom-blue" aria-label="Zoom Workplace home">
+    <header className="z-40 h-16 shrink-0 bg-white">
+      <div className="flex h-full items-center gap-3 pl-4 pr-4">
+        <Link href={ROUTES.home} className="flex shrink-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-zoom-blue" aria-label="Zoom Workplace home">
           <ZoomLogo />
-          <span className="hidden text-[17px] font-semibold tracking-tight text-ink sm:inline">Workplace</span>
+          <span className="ml-3 hidden h-6 border-l border-line pl-3 text-[22px] font-semibold leading-6 text-ink sm:inline">Workplace</span>
         </Link>
 
-        <div className="mx-auto hidden w-full max-w-md md:block">
-          <SearchBox />
+        <div className="hidden min-w-0 flex-1 items-center justify-center gap-1.5 md:flex">
+          <div className="hidden items-center lg:flex" aria-hidden>
+            <span className={`${historyButton} text-ink-disabled`}>
+              <ChevronLeft size={16} />
+            </span>
+            <span className={`${historyButton} text-ink-disabled`}>
+              <ChevronRight size={16} />
+            </span>
+            <span className={`${historyButton} text-[#2a2b2d]`}>
+              <Clock3 size={14} />
+            </span>
+          </div>
+          <div className="w-full max-w-[411px]">
+            <SearchBox />
+          </div>
         </div>
 
-        <div className="ml-auto flex items-center gap-1 md:ml-0">
-          <Link href={ROUTES.meetings} aria-label="Search meetings" className={`${iconButton} md:hidden`}>
-            <Search size={20} />
+        <div className="ml-auto flex shrink-0 items-center gap-3 md:ml-0">
+          <Link href={ROUTES.meetings} aria-label="Search meetings" className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft hover:bg-canvas md:hidden">
+            <Search size={16} />
           </Link>
-          <Link href={ROUTES.settings} aria-label="Settings" title="Settings" className={iconButton} data-testid="settings-button">
-            <Settings size={20} />
-          </Link>
+          <span aria-hidden title="Activity Center" className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft">
+            <Bell size={16} />
+          </span>
           <ProfileMenu user={user} />
         </div>
       </div>

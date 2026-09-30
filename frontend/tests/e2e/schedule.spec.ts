@@ -15,6 +15,7 @@ test.describe("Schedule meeting", () => {
     await page.getByTestId("schedule-meeting-button").click();
     await expect(page.getByTestId("schedule-meeting-modal")).toBeVisible();
     await page.getByTestId("schedule-title-input").fill(title);
+    await page.getByTestId("schedule-add-description").click();
     await page.getByTestId("schedule-description-input").fill("Roadmap and hiring plan");
     await page.getByTestId("schedule-date-input").fill(inputDate(tomorrow));
     await page.getByTestId("schedule-time-input").fill("15:30");

@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-inter), system-ui, "Segoe UI", Roboto, Arial, sans-serif;
-  --color-zoom-blue: #0b5cff;
-  --color-zoom-blue-dark: #0a4fdb;
-  --color-zoom-blue-light: #ebf2ff;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  --color-zoom-blue: #0d6bde;
+  --color-zoom-blue-dark: #0b5cc2;
+  --color-zoom-blue-light: #e8f1fd;
+  --color-zoom-tile: #0e71eb;
+  --color-zoom-tile-dark: #0b61cc;
   --color-zoom-orange: #ff742e;
   --color-zoom-orange-dark: #f2601a;
   --color-zoom-red: #e02828;
@@ -12,18 +14,23 @@
   --color-zoom-green: #23d959;
   --color-zoom-green-dark: #0f8a34;
   --color-ink: #222325;
+  --color-ink-strong: #232333;
+  --color-ink-soft: #555b62;
   --color-ink-muted: #6e7680;
-  --color-ink-disabled: #909096;
-  --color-line: #e6e8eb;
+  --color-ink-faint: rgba(4, 4, 19, 0.56);
+  --color-ink-disabled: #adb1b8;
+  --color-line: #dfe3e8;
+  --color-line-soft: #edeef2;
   --color-line-strong: #c1c6ce;
   --color-outline: #939ba4;
-  --color-disabled: rgba(82, 82, 128, 0.09);
-  --color-canvas: #f7f8fa;
-  --color-hover: #f1f3f5;
+  --color-disabled: rgba(173, 177, 184, 0.25);
+  --color-canvas: #f1f4f6;
+  --color-search: #eceff1;
+  --color-hover: #f1f4f6;
   --color-room: #1a1a1a;
-  --color-room-bar: #111111;
-  --color-room-tile: #242424;
-  --color-room-panel: #2b2b2b;
+  --color-room-bar: #1a1a1a;
+  --color-room-tile: #232323;
+  --color-room-panel: #2d2d2d;
   --color-room-hover: #333333;
   --animate-fade-in: fade-in 150ms ease-out;
   --animate-slide-up: slide-up 180ms ease-out;

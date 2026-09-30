@@ -43,8 +43,7 @@ export function JoinByIdView() {
         <h1 className="pb-3 text-center text-2xl font-semibold tracking-tight">Join Meeting</h1>
         <TextField
           id="join-page-meeting-id"
-          label="Meeting ID or invite link"
-          placeholder="Enter meeting ID or invite link"
+          label="Meeting ID or Personal Link Name"
           value={meetingInput}
           error={error}
           onChange={(event) => {

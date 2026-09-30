@@ -39,19 +39,19 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
 }
 
 test.describe("navigation adapts to screen size", () => {
-  test("mobile uses a bottom tab bar", async ({ page }) => {
+  test("mobile keeps the side rail and hides the header search", async ({ page }) => {
     await page.setViewportSize(VIEWPORTS.mobile);
     await openDashboard(page);
-    const tabs = page.getByTestId("mobile-tab-bar");
-    await expect(tabs).toBeVisible();
-    await tabs.getByRole("link", { name: "Meetings" }).click();
+    const rail = page.getByTestId("side-rail");
+    await expect(rail).toBeVisible();
+    await rail.getByRole("link", { name: "Meetings" }).click();
     await expect(page).toHaveURL(/\/meetings$/);
     await expect(page.getByTestId("header-search")).toBeHidden();
   });
 
   test("desktop uses the side rail", async ({ page }) => {
     await openDashboard(page);
-    await expect(page.getByTestId("mobile-tab-bar")).toBeHidden();
+    await expect(page.getByTestId("header-search")).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Meetings" })).toBeVisible();
   });
 });

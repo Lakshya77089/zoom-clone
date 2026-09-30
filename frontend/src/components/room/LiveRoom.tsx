@@ -2,6 +2,7 @@
 
 import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/navigation";
+import { LayoutGrid } from "lucide-react";
 import { MeetingInfo } from "@/components/room/MeetingInfo";
 import { MeetingToolbar } from "@/components/room/MeetingToolbar";
 import { ParticipantsPanel } from "@/components/room/ParticipantsPanel";
@@ -92,14 +93,14 @@ export function LiveRoom({ code, state, setState, refresh, showInviteOnLoad }: L
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-room text-white" data-testid="meeting-room" data-meeting-code={code}>
-      <header className="relative z-30 flex h-11 shrink-0 items-center justify-between gap-3 px-2 sm:px-3">
+      <header className="relative z-30 flex h-10 shrink-0 items-center gap-2 px-2 sm:px-3">
         <MeetingInfo meeting={meeting} defaultOpen={showInviteOnLoad} />
-        <p className="min-w-0 truncate text-[13px] font-semibold text-white/90" data-testid="room-title">
+        <p className="min-w-0 flex-1 truncate text-xs font-semibold text-white/90" data-testid="room-title">
           {meeting.title}
         </p>
-        <span className="flex w-12 items-center justify-end gap-1.5 text-[12px] text-white/60 sm:w-24">
-          <span className="h-2 w-2 rounded-full bg-zoom-green" aria-hidden />
-          <span className="hidden sm:inline">Live</span>
+        <span aria-hidden className="flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-white/90">
+          <LayoutGrid size={14} />
+          View
         </span>
       </header>
 

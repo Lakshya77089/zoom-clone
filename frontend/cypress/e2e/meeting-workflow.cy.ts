@@ -5,6 +5,7 @@ describe("Scheduled meeting workflow", () => {
     cy.visit("/meetings");
     cy.getByTestId("meetings-schedule-button").click();
     cy.getByTestId("schedule-title-input").clear().type(title);
+    cy.getByTestId("schedule-add-description").click();
     cy.getByTestId("schedule-description-input").type("End-to-end workflow check");
     cy.getByTestId("schedule-duration-minutes").select("45");
     cy.getByTestId("schedule-submit").click();

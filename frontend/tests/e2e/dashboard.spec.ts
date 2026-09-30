@@ -6,7 +6,7 @@ test.describe("Dashboard", () => {
     await openDashboard(page);
 
     await expect(page.getByRole("link", { name: "Zoom Workplace home" })).toBeVisible();
-    await expect(page.getByTestId("welcome-heading")).toContainText(/Good (morning|afternoon|evening)/);
+    await expect(page.getByTestId("clock-date")).toContainText(/(Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, /);
     await expect(page.getByTestId("new-meeting-button")).toBeVisible();
     await expect(page.getByTestId("join-meeting-button")).toBeVisible();
     await expect(page.getByTestId("schedule-meeting-button")).toBeVisible();

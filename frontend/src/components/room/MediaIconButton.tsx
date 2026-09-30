@@ -1,4 +1,4 @@
-import { Mic, MicOff, Video, VideoOff } from "lucide-react";
+import { ChevronUp, Mic, MicOff, Video, VideoOff } from "lucide-react";
 
 interface MediaIconButtonProps {
   kind: "audio" | "video";
@@ -26,27 +26,34 @@ export function MediaIconButton({ kind, enabled, onToggle, variant = "toolbar" }
         aria-pressed={!enabled}
         title={label}
         data-testid={`prejoin-${testId}`}
-        className={`flex h-12 w-12 items-center justify-center rounded-full outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white ${
-          enabled ? "bg-white/20 text-white backdrop-blur hover:bg-white/30" : "bg-zoom-red text-white hover:bg-zoom-red-dark"
+        className={`flex h-10 w-10 items-center justify-center rounded-full bg-canvas outline-none transition-colors hover:bg-[#e4e8eb] focus-visible:ring-2 focus-visible:ring-zoom-blue ${
+          enabled ? "text-ink" : "text-zoom-red"
         }`}
       >
-        <Icon size={22} />
+        <Icon size={20} />
       </button>
     );
   }
 
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-label={label}
-      aria-pressed={!enabled}
-      data-testid={testId}
-      data-state={enabled ? "on" : "off"}
-      className="flex min-w-[60px] flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-white outline-none transition-colors hover:bg-room-hover focus-visible:ring-2 focus-visible:ring-white/60 sm:min-w-[72px]"
-    >
-      <Icon size={22} className={enabled ? "" : "text-zoom-red"} />
-      <span className="whitespace-nowrap text-[11px]">{label}</span>
-    </button>
+    <div className="flex items-center">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label={label}
+        aria-pressed={!enabled}
+        data-testid={testId}
+        data-state={enabled ? "on" : "off"}
+        className="flex h-14 min-w-[56px] flex-col items-center justify-center gap-1 rounded-l-lg px-2 text-white outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/60 sm:min-w-[64px]"
+      >
+        <span className="flex h-6 items-center">
+          <Icon size={22} strokeWidth={1.75} className={enabled ? "" : "text-zoom-red"} />
+        </span>
+        <span className="whitespace-nowrap text-xs leading-4 text-white/90">{kind === "audio" ? "Audio" : "Video"}</span>
+      </button>
+      <span aria-hidden className="hidden h-14 items-start rounded-r-lg pr-1 pt-2 text-white/80 sm:flex">
+        <ChevronUp size={12} strokeWidth={2.5} />
+      </span>
+    </div>
   );
 }

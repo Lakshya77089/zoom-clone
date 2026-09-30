@@ -50,9 +50,9 @@ describe("Dashboard states", () => {
     cy.intercept("GET", "/api/meetings/recent", []).as("recent");
     cy.visit("/");
     cy.wait(["@upcoming", "@recent"]);
-    cy.getByTestId("upcoming-empty").should("contain", "No upcoming meetings");
+    cy.getByTestId("upcoming-empty").should("contain", "No meetings scheduled.");
     cy.getByTestId("recent-empty").should("contain", "No recent meetings");
-    cy.getByTestId("upcoming-empty").contains("button", "Schedule a meeting").click();
+    cy.getByTestId("schedule-meeting-button").click();
     cy.getByTestId("schedule-meeting-modal").should("be.visible");
   });
 

@@ -21,9 +21,10 @@ describe("Meeting preferences", () => {
 
     cy.startInstantMeeting().then((meeting) => {
       cy.visit(`/j/${meeting.meeting_code}`);
-      cy.getByTestId("prejoin-form").should("contain", "Microphone off").and("contain", "Camera off");
+      cy.getByTestId("prejoin-toggle-audio").should("have.attr", "aria-label", "Unmute");
+      cy.getByTestId("prejoin-toggle-video").should("have.attr", "aria-label", "Start Video");
       cy.getByTestId("prejoin-toggle-audio").click();
-      cy.getByTestId("prejoin-form").should("contain", "Microphone on");
+      cy.getByTestId("prejoin-toggle-audio").should("have.attr", "aria-label", "Mute");
     });
   });
 

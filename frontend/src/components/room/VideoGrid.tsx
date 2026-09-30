@@ -21,7 +21,7 @@ export function VideoGrid({ participants, selfId, localStream, mesh }: VideoGrid
   const ordered = [...participants].sort((a, b) => Number(b.id === selfId) - Number(a.id === selfId));
 
   return (
-    <div className={`grid h-full auto-rows-fr gap-2 p-2 sm:p-3 ${gridClass(ordered.length)}`}>
+    <div className={`grid h-full auto-rows-fr gap-1 p-1 sm:gap-1.5 sm:p-2 ${gridClass(ordered.length)}`}>
       {ordered.map((participant) => {
         const isSelf = participant.id === selfId;
         return (

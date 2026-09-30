@@ -4,6 +4,6 @@ interface ZoomLogoProps {
 
 export function ZoomLogo({ className = "" }: ZoomLogoProps) {
   return (
-    <span className={`select-none text-[26px] font-bold leading-none tracking-[-0.04em] text-zoom-blue ${className}`}>zoom</span>
+    <span className={`select-none text-[29px] font-extrabold leading-5 tracking-[0.06em] text-zoom-blue ${className}`}>zoom</span>
   );
 }

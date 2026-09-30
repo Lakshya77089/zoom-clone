@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { ClockCard } from "@/components/dashboard/ClockCard";
 import { MeetingActions } from "@/components/dashboard/MeetingActions";
 import { MeetingDialogs, type ActiveDialog } from "@/components/dashboard/MeetingDialogs";
+import { QuickAccess } from "@/components/dashboard/QuickAccess";
 import { RecentMeetings } from "@/components/dashboard/RecentMeetings";
 import { UpcomingMeetings } from "@/components/dashboard/UpcomingMeetings";
-import { WelcomeHeader } from "@/components/dashboard/WelcomeHeader";
 import { AppShell } from "@/components/layout/AppShell";
 import { FormAlert } from "@/components/ui/field";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -22,23 +23,22 @@ export default function HomePage() {
 
   return (
     <AppShell>
-      <div className="mx-auto w-full max-w-[1180px] px-4 py-6 sm:px-6 lg:py-10" data-testid="dashboard">
-        {error && (
-          <div className="mb-6">
-            <FormAlert>{error}</FormAlert>
-          </div>
-        )}
+      <div className="mx-auto w-full max-w-[632px] px-4 pb-10 pt-10 sm:pt-16" data-testid="dashboard">
+        <ClockCard />
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-10">
-          <section className="flex flex-col items-center justify-center gap-8 rounded-2xl py-4 lg:items-start lg:py-0" aria-label="Start or join">
-            <WelcomeHeader user={user} />
-            <MeetingActions
-              creating={launcher.creating}
-              onNewMeeting={() => void launcher.startNewMeeting()}
-              onJoin={() => setDialog("join")}
-              onSchedule={() => setDialog("schedule")}
-            />
-          </section>
+        <div className="mt-7">
+          <MeetingActions
+            creating={launcher.creating}
+            onNewMeeting={() => void launcher.startNewMeeting()}
+            onJoin={() => setDialog("join")}
+            onSchedule={() => setDialog("schedule")}
+          />
+        </div>
+
+        <div className="mt-6 space-y-4">
+          <QuickAccess />
+
+          {error && <FormAlert>{error}</FormAlert>}
 
           <UpcomingMeetings
             meetings={upcoming}
@@ -46,11 +46,8 @@ export default function HomePage() {
             startingCode={launcher.startingCode}
             onStart={(meeting) => void launcher.startMeeting(meeting)}
             onDelete={deletion.requestDelete}
-            onSchedule={() => setDialog("schedule")}
           />
-        </div>
 
-        <div className="mt-6 lg:mt-10">
           <RecentMeetings
             meetings={recent}
             loading={loading}

@@ -20,7 +20,7 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
   const { open, setOpen, ref } = useDismissible();
 
   return (
-    <div className="relative ml-1" ref={ref}>
+    <div className="relative" ref={ref}>
       <button
         type="button"
         aria-label="Profile"
@@ -28,9 +28,10 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
         aria-expanded={open}
         data-testid="profile-button"
         onClick={() => setOpen((value) => !value)}
-        className="flex rounded-full outline-none ring-offset-2 transition focus-visible:ring-2 focus-visible:ring-zoom-blue"
+        className="relative flex rounded-lg outline-none ring-offset-2 transition focus-visible:ring-2 focus-visible:ring-zoom-blue"
       >
-        {user ? <Avatar name={user.name} color={user.avatar_color} size="sm" /> : <span className="block h-8 w-8 animate-pulse rounded-full bg-line" />}
+        {user ? <Avatar name={user.name} color={user.avatar_color} size="sm" square /> : <span className="block h-8 w-8 animate-pulse rounded-lg bg-line" />}
+        <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#12b76a]" aria-hidden />
       </button>
 
       {open && (
@@ -42,7 +43,7 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
         >
           {user && (
             <div className="flex items-center gap-3 border-b border-line p-4">
-              <Avatar name={user.name} color={user.avatar_color} size="md" />
+              <Avatar name={user.name} color={user.avatar_color} size="md" square />
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{user.name}</p>
                 <p className="truncate text-[13px] text-ink-muted">{user.email}</p>

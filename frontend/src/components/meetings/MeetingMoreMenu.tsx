@@ -21,11 +21,11 @@ export function MeetingMoreMenu({ title, items }: MeetingMoreMenuProps) {
           aria-haspopup="menu"
           aria-expanded={open}
           data-testid="meeting-more-button"
-          className={`flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted outline-none transition-colors hover:bg-line/70 hover:text-ink focus-visible:ring-2 focus-visible:ring-zoom-blue ${
+          className={`flex h-8 w-8 items-center justify-center rounded-full text-ink-soft outline-none transition-colors hover:bg-line/70 hover:text-ink focus-visible:ring-2 focus-visible:ring-zoom-blue ${
             open ? "bg-line/70 text-ink" : ""
           }`}
         >
-          <MoreHorizontal size={18} />
+          <MoreHorizontal size={16} />
         </button>
       )}
     />

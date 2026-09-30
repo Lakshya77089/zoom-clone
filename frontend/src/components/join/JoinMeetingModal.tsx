@@ -14,7 +14,7 @@ interface JoinMeetingModalProps {
 export function JoinMeetingModal({ defaultName, onClose, onJoined }: JoinMeetingModalProps) {
   const { preferences } = usePreferences();
   return (
-    <Modal title="Join meeting" onClose={onClose} testId="join-meeting-modal">
+    <Modal title="Join Meeting" onClose={onClose} testId="join-meeting-modal">
       <JoinMeetingForm defaultName={defaultName} preferences={preferences} onJoined={onJoined} onCancel={onClose} />
     </Modal>
   );

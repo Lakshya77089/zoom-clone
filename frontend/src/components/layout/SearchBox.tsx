@@ -9,6 +9,7 @@ export function SearchBox() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -28,22 +29,27 @@ export function SearchBox() {
     inputRef.current?.blur();
   };
 
+  const showHint = !focused && !query;
+
   return (
     <form role="search" onSubmit={handleSubmit} className="relative">
-      <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+      <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#3d4349]" />
       <input
         ref={inputRef}
         type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search meetings"
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         aria-label="Search meetings"
         data-testid="header-search"
-        className="h-9 w-full rounded-[10px] border border-transparent bg-canvas pl-9 pr-16 text-sm text-ink outline-none transition-colors placeholder:text-ink-muted hover:border-line focus:border-zoom-blue focus:bg-white focus:ring-2 focus:ring-zoom-blue/15"
+        className="h-8 w-full rounded-lg border-[0.8px] border-transparent bg-search pl-10 pr-4 text-sm text-ink outline-none transition-colors focus:border-zoom-blue focus:bg-white [&::-webkit-search-cancel-button]:hidden"
       />
-      <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md border border-line bg-white px-1.5 text-[11px] font-medium text-ink-muted">
-        Ctrl K
-      </kbd>
+      {showHint && (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1.5 text-sm text-[#3d4349]">
+          Search <span className="text-[13px]">Ctrl+K</span>
+        </span>
+      )}
     </form>
   );
 }

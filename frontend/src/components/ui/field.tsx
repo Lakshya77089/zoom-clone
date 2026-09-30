@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { AlertCircle } from "lucide-react";
 
-export function inputClasses(invalid = false): string {
-  return `h-10 w-full rounded-xl border bg-white px-4 text-sm text-ink outline-none transition-colors placeholder:text-ink-muted/80 focus:ring-2 disabled:bg-canvas ${
+export function inputClasses(invalid = false, compact = false): string {
+  return `${compact ? "h-8 px-3 leading-[18px]" : "h-10 w-full px-4"} rounded-xl border-[0.8px] bg-white text-sm text-ink outline-none transition-colors placeholder:text-ink-disabled focus:ring-2 disabled:bg-canvas disabled:text-ink-disabled ${
     invalid
       ? "border-zoom-red focus:border-zoom-red focus:ring-zoom-red/15"
-      : "border-line-strong hover:border-outline focus:border-zoom-blue focus:ring-zoom-blue/15"
+      : "border-line-strong hover:border-outline focus:border-[#4b96f1] focus:ring-zoom-blue/15"
   }`;
 }
 

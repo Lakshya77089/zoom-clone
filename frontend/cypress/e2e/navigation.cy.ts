@@ -14,7 +14,7 @@ describe("App navigation", () => {
 
     cy.get("@rail").contains("a", "Home").click();
     cy.location("pathname").should("eq", "/");
-    cy.getByTestId("welcome-heading").should("be.visible");
+    cy.getByTestId("clock-time").should("be.visible");
   });
 
   it("switches meeting tabs and keeps the tab in the URL", () => {
@@ -43,7 +43,7 @@ describe("App navigation", () => {
     cy.getByTestId("profile-menu").should("not.exist");
 
     cy.getByTestId("profile-button").click();
-    cy.getByTestId("welcome-heading").click();
+    cy.getByTestId("clock-time").click();
     cy.getByTestId("profile-menu").should("not.exist");
   });
 

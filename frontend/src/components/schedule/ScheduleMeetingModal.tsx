@@ -23,10 +23,11 @@ export function ScheduleMeetingModal({ defaultTitle, onClose, onScheduled }: Sch
   if (scheduled) {
     return (
       <Modal
-        title="Meeting scheduled"
+        title="Meeting Scheduled"
         onClose={onClose}
-        widthClass="sm:max-w-[520px]"
+        widthClass="max-w-[560px]"
         testId="schedule-success-modal"
+        showClose
         footer={
           <>
             <Button variant="secondary" onClick={() => void copy(buildInvitation(scheduled), "Invitation copied to clipboard")}>
@@ -45,7 +46,7 @@ export function ScheduleMeetingModal({ defaultTitle, onClose, onScheduled }: Sch
   }
 
   return (
-    <Modal title="Schedule meeting" onClose={onClose} widthClass="sm:max-w-[520px]" testId="schedule-meeting-modal">
+    <Modal title="Schedule Meeting" onClose={onClose} widthClass="max-w-[760px]" testId="schedule-meeting-modal" showClose>
       <ScheduleMeetingForm
         defaultTitle={defaultTitle}
         onCancel={onClose}

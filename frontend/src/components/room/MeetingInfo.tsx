@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Info, ShieldCheck } from "lucide-react";
+import { Check, Copy, ShieldCheck } from "lucide-react";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useDismissible } from "@/hooks/useDismissible";
 import { formatMeetingCode } from "@/lib/meetingCode";
@@ -23,10 +23,9 @@ export function MeetingInfo({ meeting, defaultOpen = false }: MeetingInfoProps) 
         aria-label="Meeting information"
         aria-expanded={open}
         data-testid="meeting-info-button"
-        className="flex h-8 items-center gap-1.5 rounded-md px-2 text-white/90 outline-none hover:bg-room-hover focus-visible:ring-2 focus-visible:ring-white/60"
+        className="flex h-7 w-7 items-center justify-center rounded-md text-white/90 outline-none hover:bg-room-hover focus-visible:ring-2 focus-visible:ring-white/60"
       >
-        <ShieldCheck size={18} className="text-zoom-green" />
-        <Info size={16} />
+        <ShieldCheck size={18} fill="#1faa59" className="text-room" strokeWidth={1.75} />
       </button>
 
       {open && (
@@ -34,7 +33,7 @@ export function MeetingInfo({ meeting, defaultOpen = false }: MeetingInfoProps) 
           className="absolute left-0 top-full z-40 mt-2 w-[min(22rem,calc(100vw-1rem))] animate-fade-in rounded-xl bg-white p-5 text-ink shadow-2xl"
           data-testid="meeting-info"
         >
-          <h3 className="truncate text-[15px] font-semibold">{meeting.title}</h3>
+          <h3 className="truncate text-base font-bold">{meeting.title}</h3>
           <p className="mt-0.5 text-[13px] text-ink-muted">Share these details to invite others.</p>
           <dl className="mt-4 grid grid-cols-[88px_1fr] gap-y-2.5 text-sm">
             <dt className="text-ink-muted">Meeting ID</dt>
@@ -51,7 +50,7 @@ export function MeetingInfo({ meeting, defaultOpen = false }: MeetingInfoProps) 
           <button
             type="button"
             onClick={() => void copy(meeting.invite_link)}
-            className="mt-4 flex h-9 items-center gap-1.5 rounded-[10px] bg-zoom-blue px-3.5 text-sm font-semibold text-white hover:bg-zoom-blue-dark"
+            className="mt-4 flex h-8 items-center gap-1.5 rounded-xl bg-zoom-blue px-3.5 text-sm font-medium text-white hover:bg-zoom-blue-dark"
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
             {copied ? "Copied" : "Copy link"}

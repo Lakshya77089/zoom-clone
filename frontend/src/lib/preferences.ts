@@ -2,6 +2,7 @@ export interface Preferences {
   joinMuted: boolean;
   joinVideoOff: boolean;
   showInviteOnStart: boolean;
+  rememberedName: string;
 }
 
 const STORAGE_KEY = "zoom:preferences";
@@ -11,6 +12,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
   joinMuted: false,
   joinVideoOff: false,
   showInviteOnStart: true,
+  rememberedName: "",
 };
 
 let cachedRaw: string | null | undefined;

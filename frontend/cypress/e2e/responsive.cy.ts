@@ -22,22 +22,23 @@ describe("Responsive layout", () => {
     });
   });
 
-  it("shows the bottom tab bar and bottom-sheet dialogs on mobile", () => {
+  it("keeps the side rail and shows inset card dialogs on mobile", () => {
     cy.viewport(390, 844);
     cy.visitDashboard();
-    cy.getByTestId("mobile-tab-bar").should("be.visible");
+    cy.getByTestId("side-rail").should("be.visible");
     cy.getByTestId("join-meeting-button").click();
     cy.getByTestId("join-meeting-modal").should(($dialog) => {
       const rect = $dialog[0].getBoundingClientRect();
-      expect(Math.round(rect.bottom)).to.eq(844);
-      expect(Math.round(rect.width)).to.eq(390);
+      expect(Math.round(rect.left)).to.eq(24);
+      expect(Math.round(rect.width)).to.eq(342);
+      expect(rect.bottom).to.be.lessThan(844);
     });
   });
 
-  it("hides the tab bar and centres dialogs on desktop", () => {
+  it("shows the header search and centres dialogs on desktop", () => {
     cy.viewport(1280, 800);
     cy.visitDashboard();
-    cy.getByTestId("mobile-tab-bar").should("not.be.visible");
+    cy.getByTestId("header-search").should("be.visible");
     cy.getByTestId("join-meeting-button").click();
     cy.getByTestId("join-meeting-modal").should(($dialog) => {
       const rect = $dialog[0].getBoundingClientRect();
