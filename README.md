@@ -21,7 +21,8 @@ A video conferencing web app modeled on the Zoom web client. You can start insta
 - **Instant meeting**: generates a unique 11-digit meeting ID and a shareable invite link (`/j/<meeting id>`), then takes the host straight into the room.
 - **Join meeting**: accepts a meeting ID (with or without spaces) or a full invite link, from the Join dialog or the standalone `/join` page. You enter a display name first, and the meeting's existence is checked before joining. Each field shows its own error (invalid ID, meeting not found, meeting ended, missing name). Invite links open a pre-join screen with a camera and mic preview.
 - **Schedule meeting**: topic, description, date and time pickers, and duration. The meeting ID and link are generated automatically, the meeting is stored in SQLite, and it appears under Upcoming meetings. After saving you can copy the invitation.
-- **Meeting room**: live video and audio between all participants over WebRTC, mute and video toggles, participant grid, participants panel, a More menu (copy invite link, invitation or meeting ID, and mute all for the host), meeting info with a copy-link button, and leave / end meeting.
+- **Meeting room**: live video and audio between all participants over WebRTC, a participant grid, a participants panel, a More menu (copy invite link, invitation or meeting ID, and mute all for the host), meeting info with a copy-link button, and leave / end meeting. The bottom toolbar mirrors Zoom's: Audio and Video with their muted / camera-off states, Participants with a live count, Chat, React, Share, Record, Apps, More, and the red End (host) or Leave button.
+- **Zoom visuals**: the logo, navigation rail, header, home tiles, quick-access cards, calendar card, meeting toolbar, participants panel and settings menu use the SVG icons of the real Zoom web client, at the sizes Zoom renders them.
 - **Host controls**: mute all, remove a participant, and end the meeting for everyone. If the host leaves, host is passed to the next participant.
 - **Responsive**: works on mobile, tablet and desktop. Dialogs fit the screen, and the meeting toolbar keeps Audio, Video, Participants, More and End/Leave on small phones.
 
@@ -245,6 +246,8 @@ frontend/
   src/
     app/           routes: / (dashboard), /meetings, /settings, /join, /j/[code] (pre-join), /wc/[code] (meeting room)
     components/    ui, layout, dashboard, meetings, join, schedule, settings, prejoin, room
+      icons/       Zoom icon set: base (Svg wrapper, IconProps), glyphs (single-colour icons),
+                   brand (logo, home tiles, coloured toolbar states), illustrations (empty states)
     constants/     routes, navigation, limits and shared messages
     hooks/         data fetching, polling, media, clipboard, preferences
     lib/           API client, formatting, meeting-code parsing, preferences
@@ -430,7 +433,8 @@ One-time server setup: create `~/apps/zoom-clone/backend/.env` (`DATABASE_URL`, 
 
 ## Notes
 
-- The UI follows measurements taken from the live Zoom web app (sizes, colours, spacing, font sizes) at 1440×900 and 390×844. Icons, the logo and the empty-state illustrations use the SVG geometry of the real Zoom web client, collected in `frontend/src/components/icons`; the typeface is the system font stack.
+- The UI follows measurements taken from the live Zoom web app (sizes, colours, spacing, font sizes) at 1440×900 and 390×844, and was checked side by side against it in Playwright at both sizes.
+- Icons, the logo and the empty-state illustrations use the SVG geometry of the real Zoom web client (its home page, meeting client and calendar icon sets), not look-alikes. All of them live in `frontend/src/components/icons` and are imported from `@/components/icons`. Single-colour icons use `currentColor`, so they take the text colour of their container; icons with fixed colours (red muted states, the End button, the green encryption shield, the Recordings / Summaries / My Notes gradients) keep Zoom's colours. The typeface is the system font stack.
 - Audio and video are real WebRTC between browsers and work best with up to about 5 people on video (see [Capacity and limits](#capacity-and-limits)).
 - Google STUN is enough on normal home networks. Campus, office and mobile networks often need a TURN relay, configured with the `TURN_*`, Cloudflare or Metered variables; a `turns:…:443?transport=tcp` url gets through most firewalls.
 - Remote tiles show "Connecting..." until media flows, and "Can't connect" if the two networks can't reach each other. Mute and video off disable the local tracks, so muted audio is silent for everyone.
