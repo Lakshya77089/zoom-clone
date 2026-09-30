@@ -25,6 +25,209 @@ A video conferencing web app modeled on the Zoom web client. You can start insta
 - **Host controls**: mute all, remove a participant, and end the meeting for everyone. If the host leaves, host is passed to the next participant.
 - **Responsive**: works on mobile, tablet and desktop. Dialogs fit the screen, and the meeting toolbar keeps Audio, Video, Participants, More and End/Leave on small phones.
 
+## High-Level Design
+
+### System architecture
+
+```mermaid
+flowchart LR
+    subgraph Clients["Browsers"]
+        A["Participant A<br/>Next.js SPA"]
+        B["Participant B<br/>Next.js SPA"]
+    end
+
+    subgraph VM["Azure VM (Ubuntu)"]
+        N["nginx<br/>HTTPS :443"]
+        F["Next.js server<br/>standalone :3700"]
+        API["FastAPI + uvicorn<br/>:8750"]
+        DB[("SQLite<br/>zoom.db")]
+    end
+
+    T["STUN / TURN<br/>Google STUN, Metered relay"]
+
+    A -- "pages, /api/*" --> N
+    B -- "pages, /api/*" --> N
+    N -- "/" --> F
+    N -- "/api/*" --> API
+    API --> DB
+    A <-. "WebRTC audio + video (direct)" .-> B
+    A <-. "relay when direct path is blocked" .-> T
+    B <-. "relay when direct path is blocked" .-> T
+```
+
+- **Control plane** (meetings, participants, host actions, WebRTC signaling) goes through the REST API and is stored in SQLite.
+- **Media plane** (audio and video) never touches the server. It flows browser to browser over WebRTC, or through a TURN relay when the networks can't reach each other directly.
+- The browser only talks to its own origin. nginx (or the Next.js `/api` proxy in development) forwards `/api/*` to FastAPI, so there are no CORS issues and a single exposed port is enough.
+
+### Components
+
+```mermaid
+flowchart TB
+    subgraph FE["frontend (Next.js App Router)"]
+        P["Pages<br/>/ · /meetings · /settings · /join · /j/[code] · /wc/[code]"]
+        C["Components<br/>dashboard · meetings · schedule · join · prejoin · room · ui"]
+        H["Hooks<br/>useDashboardData · useRoomState · usePeerMesh · useLocalMedia"]
+        L["lib<br/>api client · PeerMesh (WebRTC) · format · preferences"]
+        P --> C --> H --> L
+    end
+
+    subgraph BE["backend (FastAPI, MVC)"]
+        R["routes<br/>thin HTTP layer"]
+        CT["controllers<br/>business rules, domain errors"]
+        S["schemas<br/>request / response views"]
+        M["models<br/>SQLAlchemy"]
+        R --> CT --> M
+        R --> S
+    end
+
+    L -- "fetch /api/* with X-Participant-Id / X-Participant-Token" --> R
+```
+
+### Key flows
+
+**Start an instant meeting and join by invite link**
+
+```mermaid
+sequenceDiagram
+    actor Host
+    actor Guest
+    participant UI as Next.js SPA
+    participant API as FastAPI
+    participant DB as SQLite
+
+    Host->>UI: New meeting
+    UI->>API: POST /meetings/instant
+    API->>DB: insert meeting (unique 11-digit code, live) + host participant (session token)
+    API-->>UI: meeting, invite link /j/{code}, participant id + token
+    UI->>UI: redirect to /wc/{code}
+
+    Guest->>UI: open /j/{code}
+    UI->>API: GET /meetings/{code}
+    API-->>UI: exists and joinable (else 404 / 410)
+    Guest->>UI: enter name, Join
+    UI->>API: POST /meetings/{code}/join
+    API->>DB: insert attendee participant
+    API-->>UI: participant id + token
+    UI->>UI: redirect to /wc/{code}
+
+    loop every 2 s
+        UI->>API: GET /meetings/{code}/state
+        API-->>UI: meeting, me, active participants, mute / video flags
+    end
+```
+
+**WebRTC signaling (polling mailbox)**
+
+```mermaid
+sequenceDiagram
+    participant A as Browser A (joined later, caller)
+    participant API as FastAPI signals
+    participant B as Browser B (callee)
+
+    A->>API: POST /signals {to B, offer}
+    loop every 700 ms
+        B->>API: GET /signals?after=cursor
+    end
+    API-->>B: offer
+    B->>API: POST /signals {to A, answer}
+    API-->>A: answer (on A's next poll)
+    A->>API: ICE candidates
+    B->>API: ICE candidates
+    A-->>B: media connected (direct or via TURN)
+```
+
+- In each pair the participant with the higher id (the one who joined later) sends the offer, so both sides never offer at the same time.
+- A participant who reloads sends `hello`, and the other side calls again. Calls that don't connect within 20 seconds are retried.
+- Reading with `after=cursor` also deletes the rows already processed, so the `signals` table stays small. A meeting's signals are removed when it ends.
+
+### Data model
+
+```mermaid
+erDiagram
+    USERS ||--o{ MEETINGS : hosts
+    USERS |o--o{ PARTICIPANTS : "joins as (null for guests)"
+    MEETINGS ||--o{ PARTICIPANTS : has
+    MEETINGS ||--o{ SIGNALS : carries
+    PARTICIPANTS ||--o{ SIGNALS : "sends / receives"
+
+    USERS {
+        int id PK
+        string name
+        string email UK
+        string avatar_color
+    }
+    MEETINGS {
+        int id PK
+        string meeting_code UK
+        string title
+        string meeting_type "instant | scheduled"
+        string status "scheduled | live | ended"
+        int host_id FK
+        datetime scheduled_start
+        int duration_minutes
+    }
+    PARTICIPANTS {
+        int id PK
+        int meeting_id FK
+        int user_id FK
+        string display_name
+        string session_token
+        string role "host | attendee"
+        string status "active | left | removed"
+        bool is_muted
+        bool is_video_on
+    }
+    SIGNALS {
+        int id PK
+        int meeting_id FK
+        int sender_id FK
+        int recipient_id FK
+        string kind "hello | offer | answer | candidate"
+        json payload
+    }
+```
+
+### Deployment and CI/CD
+
+```mermaid
+flowchart LR
+    Dev["git push main"] --> GA["GitHub Actions"]
+    GA --> Lint["Lint + typecheck<br/>+ backend import"]
+    Lint --> PW["Playwright"]
+    Lint --> CY["Cypress"]
+    PW --> Dep["Deploy job"]
+    CY --> Dep
+    Dep --> Pkg["build standalone frontend<br/>package backend"]
+    Pkg -- "scp + ssh" --> RD["remote-deploy.sh on VM"]
+    RD --> PM2["pm2 reload<br/>zoom-backend, zoom-frontend"]
+    PM2 --> HC{"health check"}
+    HC -- ok --> Live["live + smoke test"]
+    HC -- fail --> RB["roll back code<br/>(and database if the seed changed)"]
+```
+
+### Design decisions
+
+| Decision | Why | Trade-off |
+|---|---|---|
+| FastAPI with an MVC split (routes, controllers, schemas, models) | Business rules live in one place; routes stay thin and testable | A little more boilerplate per endpoint |
+| SQLite | Required by the assignment, zero setup, one file to back up | One writer at a time; fine for a single VM |
+| REST polling for room state (2 s) and signaling (700 ms) | Works through nginx, the Next.js proxy and tunnels with nothing extra to run | More requests than WebSockets and up to 2 s delay for list updates |
+| WebRTC full mesh, no media server | No media infrastructure to host or pay for, and lowest latency for small calls | Each browser uploads one video copy per participant, so calls stay small |
+| TURN credentials served by `/api/rtc/ice-servers` | Secrets stay on the backend and can change without a frontend rebuild | One extra request when a room opens |
+| Per-participant session token | Stops one participant acting as another (for example the host) by guessing an id | Tokens live in `sessionStorage`, so a new tab has to join again |
+| Invite links built from the request origin | Links are correct on localhost, a tunnel or the real domain | Needs the `X-Public-Origin` header, with `FRONTEND_URL` as the fallback |
+
+### Capacity and limits
+
+| Limit | Value | Where it comes from |
+|---|---|---|
+| People on video in one meeting | about 4–5 comfortably, 6 on good connections | Full mesh: each person uploads N-1 video streams, so upload bandwidth and CPU run out |
+| Audio-only meeting | about 10–15 | Audio streams are small |
+| Concurrent participants across all meetings | about 50 with sub-second responses | Measured with a local load test: one uvicorn worker, SQLite, SQLAlchemy pool of 5 + 10 connections. At about 100 the pool is exhausted and requests time out |
+| TURN relay usage | depends on the Metered plan | Only calls that can't connect directly use the relay, but each relayed stream counts against the quota |
+
+To scale further: add a media server (SFU such as LiveKit or mediasoup) so each person uploads once, move signaling and room updates to WebSockets, run several uvicorn workers, and switch to PostgreSQL.
+
 ## Project Structure
 
 ```
@@ -212,14 +415,23 @@ One-time server setup: create `~/apps/zoom-clone/backend/.env` (`DATABASE_URL`, 
 
 ## Assumptions
 
-- There is no login. A default seeded user is always signed in and owns the dashboard, as the assignment requires.
-- Anyone with a meeting ID or invite link can join as an attendee. Joining a scheduled meeting before the host starts it makes the meeting live.
-- Audio and video go directly between browsers over WebRTC in a full mesh (every participant connects to every other one), which suits small meetings. In each pair, the participant who joined later sends the offer, so both sides never offer at once. A participant who reloads sends a `hello` so the other side calls again, and calls that don't connect within 15 seconds are retried.
-- Signaling uses the REST API with short polling instead of WebSockets, so everything works behind the Next.js proxy or a tunnel with only one port exposed.
-- The browser gets its ICE servers from `/api/rtc/ice-servers`, so TURN credentials stay on the backend and can be changed with a restart instead of a rebuild. Google's public STUN servers are enough when both sides have a normal home connection. Campus, office and mobile networks usually use symmetric NAT or block UDP, and there a TURN relay is required. Set `TURN_URLS`/`TURN_USERNAME`/`TURN_CREDENTIAL` (Metered, ExpressTURN, coturn, …) or the Cloudflare TURN keys. A `turns:…:443?transport=tcp` url gets through most firewalls.
-- Each remote tile shows "Connecting..." until media is actually flowing, and "Can't connect" if the two networks can't reach each other.
-- Participant list, mute/video status and host actions sync through the API, which the room polls every 2 seconds. Mute and video off disable the local tracks, so muted audio is silent for everyone.
-- A meeting ends when the host ends it for everyone, or when the last participant leaves. Ended meetings can't be joined again and show up under Recent meetings.
-- Features outside the assignment (chat, reactions, screen share, recording, apps, calendar integration, recordings/summaries/notes, and the extra schedule options such as recurrence, passcode and waiting room) are shown only as disabled placeholders so the layout matches Zoom. They are visibly greyed out, have a "not allowed" cursor, and do nothing.
-- Zoom's own typeface is proprietary, so the UI uses the system font stack.
-- Scheduled meetings must start in the future and last between 15 minutes and 24 hours.
+- No login: a default seeded user (Alex Johnson) is always signed in, as the assignment allows.
+- Anyone with a meeting ID or invite link can join after entering a name. The meeting must exist and not have ended.
+- Joining a scheduled meeting before the host starts it makes the meeting live.
+- A meeting ends when the host ends it for everyone or the last participant leaves. If the host leaves, the next participant becomes host. Ended meetings can't be rejoined.
+- Scheduled meetings must start in the future and last 15 minutes to 24 hours. They use the browser's time zone, with no recurrence.
+
+## Mocked / Sample Data
+
+- On first start the database is seeded with 5 users, 6 upcoming meetings (placed relative to the current time) and 5 past meetings with participants.
+- The profile (name, email, "Basic" plan) is a read-only placeholder for the seeded user.
+- Settings (join muted, join with video off, show invite details, remember my name) are saved in the browser's `localStorage`.
+- Zoom features outside the assignment (chat, reactions, share screen, record, apps, recordings, summaries, notes, and schedule options such as recurrence, passcode and waiting room) are greyed-out placeholders with a "not allowed" cursor that do nothing.
+
+## Notes
+
+- The UI follows measurements taken from the live Zoom web app (sizes, colours, spacing, font sizes) at 1440×900 and 390×844. Zoom's logo, icons and typeface are proprietary, so the app uses look-alike icons and the system font stack.
+- Audio and video are real WebRTC between browsers and work best with up to about 5 people on video (see [Capacity and limits](#capacity-and-limits)).
+- Google STUN is enough on normal home networks. Campus, office and mobile networks often need a TURN relay, configured with the `TURN_*`, Cloudflare or Metered variables; a `turns:…:443?transport=tcp` url gets through most firewalls.
+- Remote tiles show "Connecting..." until media flows, and "Can't connect" if the two networks can't reach each other. Mute and video off disable the local tracks, so muted audio is silent for everyone.
+- When the seed data changes, the deploy backs up the old database and reseeds it. To reset locally, delete `backend/zoom.db` and restart.
