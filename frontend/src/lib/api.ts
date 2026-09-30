@@ -9,6 +9,7 @@ import type {
   SignalKind,
   User,
 } from "@/types";
+import { readParticipantToken } from "@/lib/participantSession";
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
@@ -58,7 +59,10 @@ async function request<T>(
 ): Promise<T> {
   const headers: Record<string, string> = { "X-Public-Origin": window.location.origin };
   if (body !== undefined) headers["Content-Type"] = "application/json";
-  if (participantId !== undefined) headers["X-Participant-Id"] = String(participantId);
+  if (participantId !== undefined) {
+    headers["X-Participant-Id"] = String(participantId);
+    headers["X-Participant-Token"] = readParticipantToken(participantId);
+  }
 
   const init: RequestInit = {
     method,

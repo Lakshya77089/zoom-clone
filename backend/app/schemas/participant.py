@@ -31,3 +31,7 @@ class ParticipantOut(BaseModel):
     is_video_on: bool
     joined_at: UTCDateTime
     left_at: UTCDateTime | None
+
+
+class ParticipantSessionOut(ParticipantOut):
+    session_token: str

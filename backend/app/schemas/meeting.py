@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from app.models.enums import MeetingStatus, MeetingType
 from app.schemas.common import UTCDateTime
-from app.schemas.participant import ParticipantOut
+from app.schemas.participant import ParticipantOut, ParticipantSessionOut
 from app.schemas.user import UserOut
 
 Title = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
@@ -47,7 +47,7 @@ class MeetingOut(BaseModel):
 
 class MeetingSessionOut(BaseModel):
     meeting: MeetingOut
-    participant: ParticipantOut
+    participant: ParticipantSessionOut
 
 
 class RoomStateOut(BaseModel):

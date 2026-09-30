@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -21,6 +22,7 @@ class Participant(Base):
     meeting_id: Mapped[int] = mapped_column(ForeignKey("meetings.id", ondelete="CASCADE"))
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     display_name: Mapped[str] = mapped_column(String(100))
+    session_token: Mapped[str] = mapped_column(String(64), default=lambda: secrets.token_urlsafe(32))
     role: Mapped[ParticipantRole] = mapped_column(
         enum_column(ParticipantRole),
         default=ParticipantRole.ATTENDEE,

@@ -41,9 +41,13 @@ export interface Participant {
   left_at: string | null;
 }
 
+export interface SessionParticipant extends Participant {
+  session_token: string;
+}
+
 export interface MeetingSession {
   meeting: Meeting;
-  participant: Participant;
+  participant: SessionParticipant;
 }
 
 export interface RoomState {

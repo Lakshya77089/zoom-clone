@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import Base, SessionLocal, engine
 from app.core.exceptions import register_exception_handlers
+from app.core.migrations import run_migrations
 from app.routes import api_router
 from app.seed import seed_database
 
@@ -13,6 +14,7 @@ from app.seed import seed_database
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
+    run_migrations(engine)
     with SessionLocal() as db:
         seed_database(db)
     yield

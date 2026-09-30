@@ -57,3 +57,15 @@ export async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);
 }
+
+export function participantHeaders(session: MeetingSession): Record<string, string> {
+  return {
+    "X-Participant-Id": String(session.participant.id),
+    "X-Participant-Token": session.participant.session_token,
+  };
+}
+
+export async function endViaApi(request: APIRequestContext, session: MeetingSession): Promise<void> {
+  const response = await request.post(`/api/meetings/${session.meeting.meeting_code}/end`, { headers: participantHeaders(session) });
+  expect(response.ok()).toBeTruthy();
+}

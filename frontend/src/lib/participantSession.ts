@@ -1,7 +1,13 @@
 const key = (code: string) => `zoom:participant:${code}`;
+const tokenKey = (participantId: number) => `zoom:participant-token:${participantId}`;
 
-export function saveParticipantId(code: string, participantId: number): void {
+export function saveParticipant(code: string, participantId: number, token: string): void {
   sessionStorage.setItem(key(code), String(participantId));
+  sessionStorage.setItem(tokenKey(participantId), token);
+}
+
+export function readParticipantToken(participantId: number): string {
+  return sessionStorage.getItem(tokenKey(participantId)) ?? "";
 }
 
 export function readParticipantId(code: string): number | null {
@@ -10,6 +16,8 @@ export function readParticipantId(code: string): number | null {
 }
 
 export function clearParticipantId(code: string): void {
+  const participantId = readParticipantId(code);
+  if (participantId !== null) sessionStorage.removeItem(tokenKey(participantId));
   sessionStorage.removeItem(key(code));
 }
 

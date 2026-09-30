@@ -22,7 +22,7 @@ export function useRoomState(code: string, participantId: number) {
           setError(null);
         },
         (err: unknown) => {
-          if (err instanceof ApiError && err.status === 404) setError(err.message);
+          if (err instanceof ApiError && (err.status === 404 || err.status === 403)) setError(err.message);
         },
       ),
     [code, participantId],
