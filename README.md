@@ -173,10 +173,39 @@ npm test                # both
 
 ## Deployment
 
-- **Backend (Render/Railway)**: root directory `backend`, build command `pip install -r requirements.txt`, start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Set `FRONTEND_URL` and `CORS_ORIGINS` to the deployed frontend URL.
-- **Frontend (Vercel)**: root directory `frontend`. Set `BACKEND_URL` to the deployed backend URL.
+The app runs on a single Linux VM behind nginx, managed by PM2:
 
-On free hosting tiers the SQLite file lives on ephemeral disk, so it is re-seeded whenever the service restarts.
+| Piece | Where |
+|---|---|
+| FastAPI backend | `127.0.0.1:8750` (uvicorn in `backend/.venv`, SQLite `zoom.db`) |
+| Next.js frontend | `127.0.0.1:3700` (standalone build) |
+| nginx | serves the domain, sends `/api/*` to the backend and everything else to the frontend |
+
+Files in `deploy/`:
+
+- `ecosystem.config.cjs`: PM2 apps `zoom-backend` and `zoom-frontend`
+- `nginx.conf.template`: site config (replace `__DOMAIN__`, `__BACKEND_PORT__`, `__FRONTEND_PORT__`)
+- `remote-deploy.sh`: unpacks a release, installs backend requirements, reloads PM2, health-checks both apps, and rolls back if either check fails
+
+### CI/CD
+
+`.github/workflows/ci-cd.yml` runs on every push and pull request:
+
+1. **Lint and typecheck**: ESLint, TypeScript (app and Cypress), and an import check for the backend
+2. **Playwright** and **Cypress** run in parallel against a fresh backend and a production build
+3. **Deploy** (pushes to `main` or a manual run only): builds the frontend in standalone mode, packages it with the backend, copies it to the server over SSH, runs `remote-deploy.sh`, then smoke-tests the live URL
+
+The deploy job reads these from the `production` environment:
+
+| Name | Kind | Value |
+|---|---|---|
+| `DEPLOY_HOST` | secret | server IP |
+| `DEPLOY_USER` | secret | SSH user |
+| `DEPLOY_SSH_KEY` | secret | private key of a deploy-only SSH key authorized on the server |
+| `DEPLOY_KNOWN_HOSTS` | secret | the server's `known_hosts` entry |
+| `ZOOM_DOMAIN` | variable | public hostname |
+
+One-time server setup: create `~/apps/zoom-clone/backend/.env` (`DATABASE_URL`, `FRONTEND_URL`, `CORS_ORIGINS`, TURN settings), install the nginx site from the template, and issue a certificate with `sudo certbot --nginx -d <domain>`. HTTPS is required because browsers only allow camera and microphone access on secure origins.
 
 ## Assumptions
 
