@@ -25,7 +25,7 @@ export function MeetingDialogs({ active, user, onClose, onScheduled, deletion }:
       {active === "join" && <JoinMeetingModal defaultName={user?.name ?? ""} onClose={onClose} onJoined={enterMeeting} />}
       {active === "schedule" && (
         <ScheduleMeetingModal
-          defaultTitle="My Meeting"
+          defaultTitle={user ? `${user.name}'s Zoom Meeting` : "My Meeting"}
           onClose={onClose}
           onScheduled={onScheduled}
         />

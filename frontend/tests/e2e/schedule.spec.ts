@@ -39,6 +39,7 @@ test.describe("Schedule meeting", () => {
   test("validates topic, past start time and minimum duration", async ({ page }) => {
     await openDashboard(page);
     await page.getByTestId("schedule-meeting-button").click();
+    await expect(page.getByTestId("schedule-title-input")).toHaveValue(/'s Zoom Meeting$/);
 
     await page.getByTestId("schedule-title-input").fill("");
     await page.getByTestId("schedule-date-input").fill(inputDate(new Date(Date.now() - 86_400_000 * 2)));

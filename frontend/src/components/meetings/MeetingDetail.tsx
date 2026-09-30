@@ -93,7 +93,9 @@ export function MeetingDetail({ meeting, variant, starting, onStart, onDelete, o
         <DetailRow label="Host">{meeting.host.name}</DetailRow>
         {meeting.description && <DetailRow label="Description">{meeting.description}</DetailRow>}
         <DetailRow label="Invite link">
-          <span className="text-zoom-blue">{meeting.invite_link}</span>
+          <a href={meeting.invite_link} target="_blank" rel="noreferrer" className="break-all text-zoom-blue hover:underline" data-testid="detail-invite-link">
+            {meeting.invite_link}
+          </a>
         </DetailRow>
       </dl>
 
