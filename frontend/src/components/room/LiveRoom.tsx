@@ -18,6 +18,7 @@ import { api } from "@/lib/api";
 import { buildInvitation } from "@/lib/format";
 import { clearParticipantId } from "@/lib/participantSession";
 import type { Participant, RoomState } from "@/types";
+import { unavailableClass } from "@/components/ui/unavailable";
 
 interface LiveRoomProps {
   code: string;
@@ -98,7 +99,7 @@ export function LiveRoom({ code, state, setState, refresh, showInviteOnLoad }: L
         <p className="min-w-0 flex-1 truncate text-xs font-semibold text-white/90" data-testid="room-title">
           {meeting.title}
         </p>
-        <span aria-hidden className="flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-white/90">
+        <span aria-hidden className={`flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-white/90 ${unavailableClass}`}>
           <LayoutGrid size={14} />
           View
         </span>

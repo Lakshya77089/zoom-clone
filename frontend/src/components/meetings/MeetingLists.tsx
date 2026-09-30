@@ -6,6 +6,7 @@ import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Info, MoreHorizon
 import { MeetingCard } from "@/components/meetings/MeetingCard";
 import { formatGroupLabel } from "@/lib/format";
 import type { Meeting } from "@/types";
+import { unavailableClass } from "@/components/ui/unavailable";
 
 interface MeetingListProps {
   meetings: Meeting[];
@@ -103,12 +104,12 @@ export function CalendarCard({ title, headingId, viewAllHref, children, testId, 
         <div className="m-2 flex items-start gap-3 rounded-xl border-[0.8px] border-[#a8ccf8] bg-[#f2f8ff] p-4 text-sm leading-[18px] text-ink">
           <Info size={20} strokeWidth={1.75} className="shrink-0 text-[#3b90f7]" />
           <p>
-            You haven&apos;t connected your calendar yet. <span className="text-zoom-blue">Connect now</span> to manage all your meetings and events in one place.
+            You haven&apos;t connected your calendar yet. <span className={`text-zoom-blue ${unavailableClass}`}>Connect now</span> to manage all your meetings and events in one place.
           </p>
         </div>
       )}
       <div className="relative flex h-11 items-center justify-center px-10">
-        <h2 id={headingId} className="flex items-center gap-1 text-sm font-bold leading-[18px] text-ink">
+        <h2 id={headingId} className={`flex items-center gap-1 text-sm font-bold leading-[18px] text-ink ${unavailableClass}`}>
           {title}
           <ChevronDown size={14} strokeWidth={2.5} aria-hidden />
         </h2>
@@ -118,7 +119,7 @@ export function CalendarCard({ title, headingId, viewAllHref, children, testId, 
           </Link>
         )}
       </div>
-      <div className="flex h-11 items-center gap-2 border-b-[0.8px] border-line px-4" aria-hidden>
+      <div className={`flex h-11 items-center gap-2 border-b-[0.8px] border-line px-4 ${unavailableClass}`} aria-hidden>
         <span className="flex h-6 items-center gap-1 rounded-full border-[0.8px] border-[#98a0a9] px-2 text-xs leading-4 text-ink">
           <CalendarDays size={12} />
           Today

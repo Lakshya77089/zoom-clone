@@ -5,6 +5,7 @@ import { Mic, MicOff, MoreHorizontal, Search, Video, VideoOff, X } from "lucide-
 import { Avatar } from "@/components/ui/Avatar";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import type { Participant } from "@/types";
+import { unavailableClass } from "@/components/ui/unavailable";
 
 interface ParticipantsPanelProps {
   participants: Participant[];
@@ -114,7 +115,7 @@ export function ParticipantsPanel({
             Mute All
           </button>
         )}
-        <span aria-hidden className="flex h-8 w-8 items-center justify-center rounded-xl bg-canvas text-ink">
+        <span aria-hidden className={`flex h-8 w-8 items-center justify-center rounded-xl bg-canvas text-ink ${unavailableClass}`}>
           <MoreHorizontal size={16} />
         </span>
       </div>

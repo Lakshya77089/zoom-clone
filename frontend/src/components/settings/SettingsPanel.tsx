@@ -91,7 +91,7 @@ export function SettingsPanel() {
                     disabled={id === null}
                     onClick={() => id && jump(id)}
                     aria-current={selected || undefined}
-                    className={`flex h-8 w-full items-center gap-2 whitespace-nowrap rounded-xl px-3 text-base leading-4 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zoom-blue disabled:cursor-default sm:w-[134px] ${
+                    className={`flex h-8 w-full items-center gap-2 whitespace-nowrap rounded-xl px-3 text-base leading-4 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zoom-blue disabled:cursor-not-allowed sm:w-[134px] ${
                       selected ? "bg-zoom-tile text-white" : "text-[#131619] hover:bg-canvas disabled:hover:bg-transparent"
                     }`}
                   >
